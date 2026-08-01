@@ -28,22 +28,60 @@
 
 它不会替你给作者或视频下结论，而是尽量告诉你：**视频在讲什么、主要观点是什么、哪些地方值得优先查看，以及当前信息有哪些边界。**
 
-## 实际效果
+## 一条视频，怎么用它
 
-下面是插件分析一条哔哩哔哩游戏攻略时的真实结果，不是设计稿。
+下面四张图来自同一条哔哩哔哩视频《【罗翔】我们为什么要读书？》，不是设计稿，也不是为演示单独制作的结果。
+
+这个例子更接近 bAI 想做的事：**它不急着评价视频好不好，而是先帮你理解内容，再决定怎样投入时间。**
+
+### 01 打开想看的视频
+
+像平常一样打开 B 站视频，不需要下载或重新上传视频文件。插件会识别当前页面，并准备视频信息与可用字幕。
+
+<p align="center">
+  <a href="docs/images/bai-video-page-example.png">
+    <img src="docs/images/bai-video-page-example.png" width="900" alt="哔哩哔哩视频《我们为什么要读书》播放页面" />
+  </a>
+</p>
+
+### 02 先看一份快速分析
+
+分析页把这段约 10 分钟的演讲整理成快速预览、观看建议、内容精华、核心观点和适合人群。你可以先掌握“功利性阅读与非功利性阅读”这条主线，再决定完整观看还是按需参考。
+
+<p align="center">
+  <a href="docs/images/bai-analysis-example.png">
+    <img src="docs/images/bai-analysis-example.png" width="620" alt="bAI 对《我们为什么要读书》的快速分析" />
+  </a>
+</p>
+
+### 03 用导航找到想看的部分
+
+导航按照视频中的真实话题变化切分内容：为什么要读书、非功利性阅读的意义、阅读的悖论与智慧，以及应该读什么、怎么读。每个节点都有时间范围、内容类型和摘要，点击即可跳转。
+
+### 04 围绕当前片段提问
+
+播放到 `3:54` 时，可以直接问这一段在讲什么、与前后内容有什么关系。回答会结合当前片段解释观点，并给出视频中的时间引用，方便回到原处核对。
 
 <table>
   <tr>
-    <td width="50%" align="center"><strong>快速分析</strong></td>
-    <td width="50%" align="center"><strong>围绕视频提问</strong></td>
+    <td width="50%" align="center"><strong>内容导航</strong></td>
+    <td width="50%" align="center"><strong>片段问答</strong></td>
   </tr>
   <tr>
-    <td><img src="docs/images/bai-analysis-example.png" alt="bAI 视频快速分析实际样例" /></td>
-    <td><img src="docs/images/bai-question-example.png" alt="bAI 视频问答实际样例" /></td>
+    <td>
+      <a href="docs/images/bai-navigation-example.png">
+        <img src="docs/images/bai-navigation-example.png" alt="bAI 视频内容导航实际样例" />
+      </a>
+    </td>
+    <td>
+      <a href="docs/images/bai-question-example.png">
+        <img src="docs/images/bai-question-example.png" alt="bAI 围绕当前视频片段提问的实际样例" />
+      </a>
+    </td>
   </tr>
 </table>
 
-在这个样例中，插件会先提炼角色机制、配队建议、内容精华和信息边界；当问题超出视频实际讲到的范围时，它会明确告诉你证据不足，而不是把猜测伪装成视频结论。
+这就是插件目前最核心的使用路径：**先预览，再定位；需要时深入观看，遇到疑问就围绕视频追问。** 点击上面的图片可以查看原图。
 
 ## 它能做什么
 
