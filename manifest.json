@@ -1,0 +1,90 @@
+{
+  "manifest_version": 3,
+  "name": "bAI 视频分析助手 - B站/YouTube视频分析、导航与问答",
+  "short_name": "bAI 视频分析助手",
+  "version": "0.1.0",
+  "description": "支持哔哩哔哩和 YouTube 的视频分析、导航与问答，快速提炼长视频的结论、观点和内容精华。",
+  "minimum_chrome_version": "114",
+
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+
+  "action": {
+    "default_title": "bAI 视频分析助手",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    },
+    "default_popup": "src/extension/popup/index.html"
+  },
+
+  "side_panel": {
+    "default_path": "src/extension/sidepanel/index.html"
+  },
+
+  "background": {
+    "service_worker": "src/extension/background/service-worker.ts",
+    "type": "module"
+  },
+
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.bilibili.com/*",
+        "*://*.youtube.com/*",
+        "*://*.youtu.be/*"
+      ],
+      "js": ["src/extension/content/index.ts"],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
+
+  "options_page": "src/extension/options/index.html",
+
+  "permissions": [
+    "sidePanel",
+    "storage",
+    "activeTab",
+    "scripting",
+    "cookies"
+  ],
+
+  "host_permissions": [
+    "*://*.bilibili.com/*",
+    "*://*.bilivideo.com/*",
+    "*://*.bilivideo.cn/*",
+    "*://*.youtube.com/*",
+    "*://*.youtu.be/*",
+    "*://*.hdslb.com/*",
+    "*://api.bilibili.com/*",
+    "*://*.minimaxi.com/*",
+    "*://api.minimaxi.com/*"
+  ],
+
+  "optional_host_permissions": [
+    "https://api.deepseek.com/*",
+    "https://dashscope.aliyuncs.com/*",
+    "https://api.moonshot.cn/*",
+    "https://open.bigmodel.cn/*",
+    "https://qianfan.baidubce.com/*",
+    "https://api.hunyuan.cloud.tencent.com/*",
+    "https://api.openai.com/*",
+    "https://generativelanguage.googleapis.com/*",
+    "https://api.anthropic.com/*",
+    "https://*/*",
+    "http://*/*",
+    "http://localhost/*",
+    "http://127.0.0.1/*"
+  ],
+
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src https://* http://* http://localhost:* http://127.0.0.1:* https://api.minimaxi.com https://*.minimaxi.com https://api.bilibili.com https://*.bilibili.com https://*.bilivideo.com https://*.bilivideo.cn https://*.hdslb.com https://www.youtube.com https://*.youtube.com https://*.youtu.be;"
+  }
+}

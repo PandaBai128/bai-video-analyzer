@@ -1,0 +1,44 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable", "WebWorker"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "forceConsistentCasingInFileNames": true,
+
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@core/*": ["src/core/*"],
+      "@extension/*": ["src/extension/*"],
+      "@components/*": ["src/components/*"],
+      "@lib/*": ["src/lib/*"],
+      "@shared/*": ["src/shared/*"]
+    },
+
+    "types": ["chrome", "vitest/globals", "@testing-library/jest-dom"]
+  },
+  "include": [
+    "src",
+    "tests",
+    "vite.config.ts",
+    "manifest.json"
+  ],
+  "exclude": ["node_modules", "dist", "coverage"]
+}

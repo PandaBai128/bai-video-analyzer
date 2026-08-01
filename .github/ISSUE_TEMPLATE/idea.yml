@@ -1,0 +1,20 @@
+name: 建议与想法
+description: 分享使用体验、分析角度或功能建议
+title: "[建议] "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: situation
+    attributes:
+      label: 你在什么场景下需要它？
+      placeholder: 例如长播客、技术教程、游戏攻略或课程视频。
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: 你的建议
+      placeholder: 说明现在的体验、希望发生的变化，以及它能解决什么问题。
+    validations:
+      required: true
