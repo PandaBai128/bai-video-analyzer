@@ -116,7 +116,7 @@ function getMarkdownCopy(locale: UiLocale): MarkdownCopy {
         action: 'Action',
       },
       empty: {
-        noGuide: 'Pre-watch analysis not generated',
+        noGuide: 'Video analysis not generated',
         notSpecified: 'Not specified',
         notProvided: 'Not provided',
         noInsights: 'No clear takeaways yet. Add records and regenerate notes.',

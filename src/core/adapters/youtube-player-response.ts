@@ -4,12 +4,12 @@
  * 设计原则：
  * - 纯逻辑，不依赖 `chrome.*`，单测可直接覆盖。
  * - DOM XML 解析用全局 `DOMParser`（content script 和 jsdom 都提供）；失败或缺失时抛错。
- * - 排序语言策略参考 SPEC：人工中文 → 人工英文 → 任意人工 → ASR 中文 → ASR 英文 → 任意 ASR。
+ * - 字幕轨道沿用共享语言偏好排序，保持与其他视频平台一致的选择语义。
  *
- * 参考：/Users/nathan/.minimax-agent-cn/projects/youtube-transcript-extension/content.js
- *   - innerTube 用 ANDROID client（clientName=ANDROID, clientVersion=20.10.38）才能拿到不带 exp=xpe 的 captionTracks
- *   - timedtext 不要加 fmt=json3，否则会被 sparses 签名拒绝返回空 body
- *   - XML 同时支持格式 A（`<transcript><text start dur>`）和格式 B（`<timedtext><body><p t d><s>`）
+ * 实现约束：
+ * - innerTube 用 ANDROID client（clientName=ANDROID, clientVersion=20.10.38）才能拿到不带 exp=xpe 的 captionTracks。
+ * - timedtext 不要加 fmt=json3，否则会被 sparses 签名拒绝返回空 body。
+ * - XML 同时支持格式 A（`<transcript><text start dur>`）和格式 B（`<timedtext><body><p t d><s>`）。
  */
 
 import type { SubtitleCue } from '@core/types';

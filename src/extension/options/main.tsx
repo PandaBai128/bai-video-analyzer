@@ -438,7 +438,7 @@ function Options(): JSX.Element {
                   <span className="block text-xs text-muted-foreground">
                     {t(
                       '字幕导航、提问、视频分析和学习笔记使用这个自带 Key 的文本模型。',
-                      'Subtitle navigation, questions, pre-watch analysis, and study notes use this self-managed text model.',
+                      'Subtitle navigation, questions, video analysis, and study notes use this self-managed text model.',
                     )}
                   </span>
                 </label>
