@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PandaBai128/bai-video-analyzer/releases/latest">下载安装包</a>
+  <a href="https://video-analysis.pandabai.com/">官网与下载安装</a>
   ·
   <a href="https://github.com/PandaBai128/bai-video-analyzer/issues">反馈问题</a>
   ·
@@ -129,12 +129,12 @@
 
 目前尚未上架 Chrome Web Store，推荐使用 Release 中的 ZIP 包：
 
-1. 从 [Releases](https://github.com/PandaBai128/bai-video-analyzer/releases/latest) 下载 `bai-video-analyzer-v0.1.1.zip`。
+1. 从 [bAI 视频分析助手官网](https://video-analysis.pandabai.com/) 下载最新版 ZIP；[GitHub Releases](https://github.com/PandaBai128/bai-video-analyzer/releases/latest) 保留为备用下载渠道。
 2. 解压文件，打开 Chrome 的 `chrome://extensions/`。
 3. 开启“开发者模式”，选择“加载已解压的扩展程序”。
 4. 选择解压后的 `dist` 文件夹，然后把 bAI 固定到工具栏。
 
-已有旧版的用户，请把新版 ZIP 解压到原安装目录并在 `chrome://extensions/` 点击该扩展的重新加载按钮。Release 同时提供 CRX，适合小范围测试；部分 Chrome 版本会限制直接安装未上架商店的 CRX，此时请改用 ZIP 方式。
+已有旧版的用户，请把新版 ZIP 解压到原安装目录并在 `chrome://extensions/` 点击该扩展的重新加载按钮。当前开发者模式安装需要手动完成此步骤，访问官网不会让浏览器自动升级。Release 同时提供 CRX，适合小范围测试；部分 Chrome 版本会限制直接安装未上架商店的 CRX，此时请改用 ZIP 方式。
 
 ### 2. 使用公共体验服务
 
