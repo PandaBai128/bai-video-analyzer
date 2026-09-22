@@ -5,7 +5,7 @@ import {
   stripThinkSections,
 } from '@core/llm/bai-service-client';
 import { LanguageModelApiError } from '@core/llm/language-model-client';
-import type { BaiServiceSettings } from '@shared/settings';
+import { DEFAULT_BAI_SERVICE_URL, type BaiServiceSettings } from '@shared/settings';
 
 const SETTINGS: BaiServiceSettings = {
   serviceUrl: 'http://io2477kl7316.vicp.fun/',
@@ -66,8 +66,8 @@ describe('BaiServiceClient', () => {
     });
 
     expect(requests.map((request) => request.url)).toEqual([
-      'http://io2477kl7316.vicp.fun/auth/invite',
-      'http://io2477kl7316.vicp.fun/chat',
+      `${DEFAULT_BAI_SERVICE_URL}/auth/invite`,
+      `${DEFAULT_BAI_SERVICE_URL}/chat`,
     ]);
     expect(requestBody(0)).toEqual({ code: 'bai-demo' });
     expect(requests[1]?.init.headers).toMatchObject({
@@ -120,8 +120,8 @@ describe('BaiServiceClient', () => {
     const quota = await client.getQuota();
 
     expect(requests.map((request) => request.url)).toEqual([
-      'http://io2477kl7316.vicp.fun/auth/invite',
-      'http://io2477kl7316.vicp.fun/me/quota',
+      `${DEFAULT_BAI_SERVICE_URL}/auth/invite`,
+      `${DEFAULT_BAI_SERVICE_URL}/me/quota`,
     ]);
     expect(requests[1]?.init.headers).toMatchObject({
       Authorization: 'Bearer issued-token',
@@ -195,7 +195,7 @@ describe('BaiServiceClient', () => {
     await client.chat([{ role: 'user', content: 'hi' }]);
 
     expect(requests).toHaveLength(1);
-    expect(requests[0]?.url).toBe('http://io2477kl7316.vicp.fun/chat');
+    expect(requests[0]?.url).toBe(`${DEFAULT_BAI_SERVICE_URL}/chat`);
     expect(requests[0]?.init.headers).toMatchObject({
       Authorization: 'Bearer stored-token',
     });
@@ -254,7 +254,7 @@ describe('BaiServiceClient', () => {
       chunks.push(chunk);
     }
 
-    expect(requests[1]?.url).toBe('http://io2477kl7316.vicp.fun/chat');
+    expect(requests[1]?.url).toBe(`${DEFAULT_BAI_SERVICE_URL}/chat`);
     expect(requestBody(1)).toMatchObject({ stream: true });
     expect(chunks).toEqual([
       { text: '你', done: false },

@@ -2,7 +2,8 @@ export const DEFAULT_MINIMAX_BASE_URL = 'https://api.minimaxi.com';
 export const ALTERNATE_MINIMAX_BASE_URL = 'https://api.minimax.io';
 export const DEFAULT_MINIMAX_MODEL = 'MiniMax-M3';
 export const DEFAULT_MINIMAX_FAST_MODEL = 'MiniMax-M2.7-highspeed';
-export const DEFAULT_BAI_SERVICE_URL = 'http://io2477kl7316.vicp.fun';
+export const DEFAULT_BAI_SERVICE_URL = 'https://video-analysis.pandabai.com';
+const LEGACY_BAI_SERVICE_URL = 'http://io2477kl7316.vicp.fun';
 export const DEFAULT_BAI_SERVICE_MODEL = 'bai-service';
 
 export type TextModelAccessMode = 'bai-free' | 'own-key';
@@ -272,11 +273,8 @@ export function normalizeOpenAiCompatibleBaseUrl(baseUrl: string): string {
 }
 
 export function normalizeBaiServiceUrl(serviceUrl: string): string {
-  return normalizeBaseUrl(serviceUrl);
-}
-
-export function isDefaultBaiServiceUrl(serviceUrl: string): boolean {
-  return normalizeBaiServiceUrl(serviceUrl) === normalizeBaiServiceUrl(DEFAULT_BAI_SERVICE_URL);
+  const normalized = normalizeBaseUrl(serviceUrl);
+  return normalized === LEGACY_BAI_SERVICE_URL ? DEFAULT_BAI_SERVICE_URL : normalized;
 }
 
 export function normalizeMinimaxBaseUrl(baseUrl: string): string {

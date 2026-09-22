@@ -129,12 +129,12 @@
 
 目前尚未上架 Chrome Web Store，推荐使用 Release 中的 ZIP 包：
 
-1. 从 [Releases](https://github.com/PandaBai128/bai-video-analyzer/releases/latest) 下载 `bai-video-analyzer-v0.1.0.zip`。
+1. 从 [Releases](https://github.com/PandaBai128/bai-video-analyzer/releases/latest) 下载 `bai-video-analyzer-v0.1.1.zip`。
 2. 解压文件，打开 Chrome 的 `chrome://extensions/`。
 3. 开启“开发者模式”，选择“加载已解压的扩展程序”。
 4. 选择解压后的 `dist` 文件夹，然后把 bAI 固定到工具栏。
 
-Release 同时提供 CRX，适合小范围测试；部分 Chrome 版本会限制直接安装未上架商店的 CRX，此时请改用 ZIP 方式。
+已有旧版的用户，请把新版 ZIP 解压到原安装目录并在 `chrome://extensions/` 点击该扩展的重新加载按钮。Release 同时提供 CRX，适合小范围测试；部分 Chrome 版本会限制直接安装未上架商店的 CRX，此时请改用 ZIP 方式。
 
 ### 2. 使用公共体验服务
 
@@ -146,10 +146,7 @@ thankyoupanda
 
 这是公开共享的邀请码，**每天共有 1000 次、每周共有 5000 次调用额度，先到先得**。我的模型 API 额度有限，所以目前只能提供这些；公共服务可能因为额度、维护或滥用临时不可用，也不承诺长期稳定性。
 
-> [!WARNING]
-> 当前公共体验服务使用 **HTTP**。邀请码、服务签发的临时 token，以及提交给模型的视频字幕和问题，可能在网络链路中以明文传输。请勿用它处理敏感视频或敏感问题；这类内容应改用你自己的 **HTTPS Provider**。
->
-> 为公共体验服务提供有效 HTTPS，并随后移除扩展对公网 HTTP 的连接例外，是正式上线前的阻塞项。基础设施完成迁移前，这项风险仍未彻底解决。
+公共体验服务通过 `https://video-analysis.pandabai.com` 提供 HTTPS 连接。旧版插件仍指向原 NAS HTTP 地址，请升级到 v0.1.1；新版会把旧地址迁移到新域名，并保留已保存的邀请码。
 
 ### 3. 或者使用自己的 API
 

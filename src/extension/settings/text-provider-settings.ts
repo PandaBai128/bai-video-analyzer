@@ -3,7 +3,6 @@ import {
   getActiveTextProviderId,
   getEffectiveBaiServiceSettings,
   getEffectiveOpenAiCompatibleSettings,
-  isDefaultBaiServiceUrl,
   migrateTextProviderSettings,
   toPublicTextProviderSettings,
   type PublicTextProviderSettings,
@@ -83,9 +82,7 @@ export function getLanguageModelHostPermissionPattern(
     if (!baiService.serviceUrl.trim()) {
       return null;
     }
-    return createHostPermissionPattern(baiService.serviceUrl, {
-      allowPublicHttp: isDefaultBaiServiceUrl(baiService.serviceUrl),
-    });
+    return createHostPermissionPattern(baiService.serviceUrl);
   }
 
   const openAi = getEffectiveOpenAiCompatibleSettings(settings);
@@ -96,10 +93,7 @@ export function getLanguageModelHostPermissionPattern(
   return createHostPermissionPattern(openAi.baseUrl);
 }
 
-export function createHostPermissionPattern(
-  baseUrl: string,
-  options: { readonly allowPublicHttp?: boolean } = {},
-): string | null {
+export function createHostPermissionPattern(baseUrl: string): string | null {
   let parsed: URL;
   try {
     parsed = new URL(baseUrl);
@@ -112,9 +106,7 @@ export function createHostPermissionPattern(
   }
   if (
     parsed.protocol === 'http:' &&
-    (options.allowPublicHttp ||
-      parsed.hostname === 'localhost' ||
-      parsed.hostname === '127.0.0.1')
+    (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1')
   ) {
     return `http://${parsed.hostname}/*`;
   }

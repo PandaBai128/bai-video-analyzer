@@ -1,6 +1,6 @@
 {
   "name": "bai-browser-assistant",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "bAI 视频分析助手 - 支持哔哩哔哩和 YouTube 的视频分析、导航与问答。",
   "license": "MIT",

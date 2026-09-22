@@ -371,7 +371,7 @@ describe('Text provider settings migration', () => {
     expect(getActiveTextProviderId(migrated)).toBe('bai-service');
     expect(getActiveTextModel(migrated)).toBe('bai-route-a');
     expect(getEffectiveBaiServiceSettings(migrated)).toEqual({
-      serviceUrl: 'http://io2477kl7316.vicp.fun',
+      serviceUrl: DEFAULT_BAI_SERVICE_URL,
       inviteCode: 'bai-demo',
       accessToken: 'saved-token',
       tokenExpiresAt: '2026-07-06T00:00:00.000Z',

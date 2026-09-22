@@ -79,8 +79,8 @@ describe('language model host permissions', () => {
     expect(manifest.optional_host_permissions).toContain('https://*/*');
   });
 
-  it('declares optional HTTP host permission for bAI service trial endpoints', () => {
-    expect(manifest.optional_host_permissions).toContain('http://*/*');
+  it('does not request public HTTP host permission for bAI service', () => {
+    expect(manifest.optional_host_permissions).not.toContain('http://*/*');
   });
 
   it('still requests the concrete origin for a custom OpenAI-compatible provider', () => {
@@ -115,7 +115,7 @@ describe('language model host permissions', () => {
     ).toThrow('模型服务 Base URL 只允许 https');
   });
 
-  it('allows public HTTP host permission for the default bAI service endpoint', () => {
+  it('uses the new HTTPS host for the default bAI service endpoint', () => {
     expect(
       getLanguageModelHostPermissionPattern({
         ...createDefaultTextProviderSettings(),
@@ -127,7 +127,7 @@ describe('language model host permissions', () => {
           model: 'bai-service',
         },
       }),
-    ).toBe('http://io2477kl7316.vicp.fun/*');
+    ).toBe('https://video-analysis.pandabai.com/*');
   });
 
   it('rejects non-default public HTTP endpoints in bAI service mode', () => {
