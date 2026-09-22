@@ -47,7 +47,6 @@ Icon
 *.pem
 api-keys.txt
 secrets/
-spikes/nas-bai-gateway/data/
 
 # Local config
 .vite/

@@ -240,7 +240,7 @@ export interface TextProviderSettings {
   readonly activeTextProvider?: LanguageModelProviderId;
   /** 非 MiniMax Provider 统一走 OpenAI-compatible Chat Completions。 */
   readonly openAiCompatible?: OpenAiCompatibleSettings;
-  /** bAI 服务模式：邀请码换 token 后由 NAS/服务端保管真实模型 Key。 */
+  /** bAI 服务模式：邀请码换 token 后由服务端保管真实模型 Key。 */
   readonly baiService?: BaiServiceSettings;
   readonly updatedAt: number;
 }

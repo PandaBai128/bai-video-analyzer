@@ -16,7 +16,7 @@
 
 ## 公共体验服务
 
-v0.1.1 起，公共体验服务通过 `https://video-analysis.pandabai.com` 提供 HTTPS 连接。旧版插件仍指向原 NAS HTTP 地址，应升级到最新版。
+公共体验服务通过 `https://video-analysis.pandabai.com` 提供 HTTPS 连接。
 
 - 公共服务会把调用所需的字幕和问题转发给模型服务商；请自行判断内容是否适合提交。
 - 敏感内容可使用你自己控制的 HTTPS Provider，并确认服务商的数据处理规则。
