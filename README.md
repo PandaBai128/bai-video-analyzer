@@ -38,13 +38,13 @@
 
 像平常一样打开 B 站视频，不需要下载或重新上传视频文件。插件会识别当前页面，并准备视频信息与可用字幕；内容准备完成后，即可在侧边栏生成分析或导航。
 
-### 02 先看一份快速分析
+### 02 先看一份内容速览
 
-分析页把这段约 10 分钟的演讲整理成快速预览、观看建议、内容精华、核心观点和适合人群。你可以先掌握“功利性阅读与非功利性阅读”这条主线，再决定完整观看还是按需参考。
+速览把视频整理成概述、带时间点的主要内容、核心观点和需要留意的地方。先了解“功利性阅读与非功利性阅读”这条主线，再点击时间点查看感兴趣的片段。
 
 <p align="center">
-  <a href="docs/images/bai-analysis-example.png">
-    <img src="docs/images/bai-analysis-example.png" width="620" alt="bAI 对《我们为什么要读书》的快速分析" />
+  <a href="site/video-analysis/assets/overview-20260926.png">
+    <img src="site/video-analysis/assets/overview-20260926.png" width="620" alt="bAI 对《我们为什么要读书》的新版内容速览" />
   </a>
 </p>
 
@@ -63,8 +63,8 @@
   </tr>
   <tr>
     <td>
-      <a href="docs/images/bai-navigation-example.png">
-        <img src="docs/images/bai-navigation-example.png" alt="bAI 视频内容导航实际样例" />
+      <a href="site/video-analysis/assets/navigation-20260926.png">
+        <img src="site/video-analysis/assets/navigation-20260926.png" alt="bAI 视频内容导航实际样例" />
       </a>
     </td>
     <td>
