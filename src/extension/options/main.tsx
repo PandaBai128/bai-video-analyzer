@@ -4,6 +4,7 @@ import '@/styles/globals.css';
 import { LocaleProvider, useLocale } from '@extension/ui/locale-context';
 import { localizeUnknownError, localizeUserMessage } from '@extension/ui/localized-error';
 import { AppearanceSection } from './AppearanceSection';
+import { UpdateSection } from './UpdateSection';
 import { SettingsNav } from './SettingsNav';
 import {
   checkVaultPermission,
@@ -350,6 +351,7 @@ function Options(): JSX.Element {
           <SettingsNav t={t} />
 
           <div className="min-w-0 space-y-6">
+            <UpdateSection />
             <AppearanceSection
               t={t}
               locale={locale}
@@ -438,7 +440,7 @@ function Options(): JSX.Element {
                   <span className="block text-xs text-muted-foreground">
                     {t(
                       '字幕导航、提问、视频分析和学习笔记使用这个自带 Key 的文本模型。',
-                      'Subtitle navigation, questions, video analysis, and study notes use this self-managed text model.',
+                      'Subtitle navigation, questions, pre-watch analysis, and study notes use this self-managed text model.',
                     )}
                   </span>
                 </label>

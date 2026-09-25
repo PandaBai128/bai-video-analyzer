@@ -1,0 +1,334 @@
+@media (min-width: 1450px) {
+  .hero {
+    padding-block: 115px 130px;
+  }
+}
+@media (max-height: 760px) and (min-width: 801px) {
+  .preview-sticky {
+    top: 92px;
+  }
+  .screenshot-stage {
+    height: calc(100dvh - 185px);
+  }
+}
+@media (max-width: 1050px) {
+  .container {
+    width: calc(100% - 64px);
+  }
+  .hero {
+    gap: 35px;
+  }
+  h1 {
+    font-size: 55px;
+  }
+  .hero-actions {
+    gap: 16px;
+  }
+  .hero-art {
+    padding-inline: 0;
+  }
+  .note-top {
+    right: -12px;
+  }
+  .note-bottom {
+    left: -15px;
+  }
+  .experience {
+    gap: 55px;
+  }
+  .notes-section {
+    padding-inline: 30px;
+    gap: 45px;
+  }
+  .step-copy h3,
+  .notes-copy h2 {
+    font-size: 29px;
+  }
+  .book-scene {
+    right: 12px;
+    transform: rotate(-13deg) scale(0.86);
+  }
+  .video-caption {
+    padding-left: 20px;
+  }
+  .install-steps {
+    gap: 28px;
+  }
+  .site-footer > p {
+    display: none;
+  }
+}
+@media (max-width: 800px) {
+  :root {
+    scroll-padding-top: 90px;
+  }
+  .container {
+    width: min(540px, calc(100% - 40px));
+  }
+  .header-inner {
+    height: 66px;
+  }
+  .brand {
+    font-size: 20px;
+    gap: 8px;
+  }
+  .brand-name {
+    font-size: 12px;
+    margin-left: 3px;
+  }
+  .site-header nav {
+    gap: 15px;
+  }
+  .site-header nav > a:not(.nav-download) {
+    display: none;
+  }
+  .nav-download {
+    font-size: 11px;
+    gap: 8px;
+    padding: 9px 12px;
+  }
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 57px;
+    padding-block: 54px 75px;
+  }
+  .eyebrow {
+    margin-bottom: 23px;
+    font-size: 11px;
+  }
+  h1 {
+    font-size: clamp(45px, 10.3vw, 64px);
+  }
+  .hero-description {
+    font-size: 15px;
+    margin: 29px 0 25px;
+  }
+  .hero-actions {
+    gap: 25px;
+  }
+  .button {
+    min-height: 50px;
+    font-size: 13px;
+    padding: 14px 22px;
+  }
+  .hero-meta {
+    margin-bottom: 26px;
+  }
+  .hero-art {
+    width: calc(100% - 26px);
+    max-width: 450px;
+    justify-self: center;
+    padding-top: 6px;
+  }
+  .demo-video {
+    height: 175px;
+  }
+  .video-caption h2 {
+    font-size: 26px;
+  }
+  .note-top {
+    top: -14px;
+    right: -15px;
+  }
+  .note-bottom {
+    left: -15px;
+    bottom: -21px;
+  }
+  .floating-note {
+    padding: 10px 13px;
+    font-size: 10px;
+  }
+  .demo-assistant {
+    padding-inline: 20px;
+  }
+  .book-scene {
+    right: 8px;
+    transform: rotate(-13deg) scale(0.88);
+  }
+  .intro {
+    padding-block: 40px 35px;
+  }
+  .intro h2 {
+    font-size: 26px;
+    line-height: 1.5;
+  }
+  .intro h2 span {
+    display: block;
+  }
+  .intro > p {
+    font-size: 13px;
+    max-width: 300px;
+    margin-inline: auto;
+  }
+  .experience {
+    display: block;
+    padding-bottom: 0;
+  }
+  .experience-preview {
+    display: none;
+  }
+  .story-step {
+    grid-template-columns: 30px 1fr;
+    gap: 19px;
+    min-height: 0;
+    padding-block: 25px 32px;
+    align-items: start;
+  }
+  .story-step::before {
+    left: 14px;
+  }
+  .step-line {
+    align-self: start;
+    margin-top: 3px;
+  }
+  .step-line > span {
+    width: 30px;
+    height: 30px;
+  }
+  .step-copy h3 {
+    font-size: 29px;
+    margin-bottom: 14px;
+  }
+  .step-copy .section-label {
+    margin-bottom: 11px;
+  }
+  .step-copy > p:not(.section-label) {
+    font-size: 13px;
+  }
+  .story-button {
+    display: none;
+  }
+  .mobile-shot {
+    display: block;
+    grid-column: 2;
+    border: 1px solid #d5dfcf;
+    border-radius: 10px;
+    overflow: hidden;
+    height: 255px;
+    margin-top: 4px;
+  }
+  .mobile-shot img {
+    width: 100%;
+    height: auto;
+  }
+  .notes-section {
+    grid-template-columns: 1fr;
+    gap: 27px;
+    padding: 33px 27px 38px;
+    margin-top: 30px;
+    margin-bottom: 64px;
+  }
+  .notes-illustration {
+    height: 235px;
+  }
+  .note-paper {
+    width: 225px;
+  }
+  .note-spark {
+    right: 9%;
+    width: 40px;
+    height: 40px;
+  }
+  .notes-copy h2 {
+    font-size: 29px;
+  }
+  .notes-copy p {
+    font-size: 12px;
+  }
+  .install-section {
+    padding-block: 55px 20px;
+  }
+  .install-heading {
+    display: block;
+  }
+  .install-heading h2 {
+    font-size: 34px;
+    margin-bottom: 27px;
+  }
+  .download-block {
+    text-align: left;
+  }
+  .download-block p {
+    margin-top: 12px;
+  }
+  .install-steps {
+    grid-template-columns: 1fr;
+    margin-top: 35px;
+    gap: 27px;
+  }
+  .install-steps li {
+    position: relative;
+    padding-top: 23px;
+    padding-left: 44px;
+  }
+  .install-number {
+    position: absolute;
+    top: 21px;
+    left: 0;
+  }
+  .install-steps h3 {
+    margin: 1px 0 11px;
+  }
+  .install-steps p {
+    margin-block: 8px;
+    font-size: 13px;
+  }
+  .quota-note {
+    padding-block: 2px 24px;
+  }
+  .help-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .help-row details + details {
+    border-top: 1px solid #49624e;
+  }
+  .site-footer {
+    flex-wrap: wrap;
+    gap: 23px;
+    padding-block: 27px;
+  }
+  .site-footer > div {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+@media (max-width: 360px) {
+  .brand-name {
+    display: none;
+  }
+  .demo-assistant {
+    padding-inline: 15px;
+  }
+  .book-scene {
+    right: -7px;
+    transform: rotate(-13deg) scale(0.75);
+  }
+  .demo-panel p {
+    font-size: 12px;
+  }
+  .hero-actions {
+    gap: 16px;
+  }
+  .button {
+    padding-inline: 17px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .button:hover,
+  .quiet-link:hover span,
+  .story-button:hover .icon {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) { .story-frame { transition: none; } }

@@ -19,6 +19,7 @@ describe('alignLearningGuideWithTimeline', () => {
         },
         verdict: '选择性看计划模式相关段落。',
         overallMeaning: '视频讲 Codex 桌面端。',
+        contentPoints: [{ title: '计划模式', detail: '演示用计划模式让 Codex 输出建站计划。' }],
         reason: '计划模式值得看。',
         bestFor: [],
         notFor: [],
@@ -103,5 +104,54 @@ describe('alignLearningGuideWithTimeline', () => {
       startTimestamp: 20 * 60 + 14,
       endTimestamp: 23 * 60 + 26,
     });
+    expect(aligned.decision.contentPoints?.[0]?.timestamp).toBe(20 * 60 + 14);
+
+    const fromTranscript = alignLearningGuideWithTimeline(guide, null, [
+      { start: 0, text: '先介绍桌面端。' },
+      { start: 1400, text: '演示用计划模式让 Codex 输出建站计划。' },
+      { start: 1410, text: '接着调整页面。' },
+    ]);
+    expect(fromTranscript.decision.contentPoints?.[0]?.timestamp).toBe(1400);
+
+    const ambiguous = alignLearningGuideWithTimeline(guide, null, [
+      { start: 1400, text: '演示用计划模式让 Codex 输出建站计划。' },
+      { start: 1800, text: '演示用计划模式让 Codex 输出建站计划。' },
+    ]);
+    expect(ambiguous.decision.contentPoints?.[0]?.timestamp).toBeUndefined();
+
+    const withEarlyModelTime: LearningGuide = {
+      ...guide,
+      decision: {
+        ...guide.decision,
+        contentPoints: [{ title: '大床的演示', detail: '实际展示大床的操作过程。', timestamp: 660 }],
+      },
+    };
+    const withPreciseSegment: VideoAnalysis = {
+      ...analysis,
+      chapters: [{
+        ...analysis.chapters[0]!,
+        timestamp: 660,
+        title: '卧室布置',
+        summary: '介绍卧室，并转入大床演示。',
+        segments: [{
+          timestamp: 690,
+          title: '大床演示',
+          summary: '实际展示大床的操作过程。',
+          importance: 'recommended',
+        }],
+      }],
+    };
+    expect(alignLearningGuideWithTimeline(withEarlyModelTime, withPreciseSegment).decision.contentPoints?.[0]?.timestamp).toBe(690);
+
+    const chapterOnly: VideoAnalysis = {
+      ...withPreciseSegment,
+      chapters: [{
+        ...withPreciseSegment.chapters[0]!,
+        timestamp: 690,
+        title: '大床演示',
+        segments: [],
+      }],
+    };
+    expect(alignLearningGuideWithTimeline(withEarlyModelTime, chapterOnly).decision.contentPoints?.[0]?.timestamp).toBe(690);
   });
 });

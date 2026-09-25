@@ -58,10 +58,12 @@ export async function generateLearningGuide(input: {
         generatedAt: Date.now(),
         modelUsed: response.model,
         outputLocale: input.outputLocale ?? DEFAULT_UI_LOCALE,
+        transcriptCues: input.transcriptCues,
       });
       return alignLearningGuideWithTimeline(
         { ...guide, outputLocale: input.outputLocale ?? DEFAULT_UI_LOCALE },
         input.analysis,
+        input.transcriptCues,
       );
     } catch {
       if (abort.signal.aborted) {
@@ -86,10 +88,12 @@ export async function generateLearningGuide(input: {
         generatedAt: Date.now(),
         modelUsed: retryResponse.model,
         outputLocale: input.outputLocale ?? DEFAULT_UI_LOCALE,
+        transcriptCues: input.transcriptCues,
       });
       return alignLearningGuideWithTimeline(
         { ...guide, outputLocale: input.outputLocale ?? DEFAULT_UI_LOCALE },
         input.analysis,
+        input.transcriptCues,
       );
     }
   } catch (error) {

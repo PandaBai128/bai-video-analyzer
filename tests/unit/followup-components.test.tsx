@@ -56,7 +56,7 @@ describe('FollowupQuickQuestions', () => {
     render(<FollowupQuickQuestions disabled={false} onSubmit={onSubmit} />);
     fireEvent.click(screen.getByRole('button', { name: '整体讲什么？' }));
     expect(onSubmit).toHaveBeenCalledWith(
-      '这个视频整体讲了什么内容？请用学习视角概括内容主线、关键概念和核心观点，不要照搬分析页模板，也不要输出观看路线。',
+      '请用清楚、简洁的语言，讲讲这个视频主要说了什么、内容是怎么展开的，以及作者有哪些主要观点。',
       undefined,
     );
   });
@@ -153,8 +153,8 @@ describe('FollowupMessages', () => {
         onSubmitSuggestion={() => undefined}
       />,
     );
-    expect(screen.getByText('仅视频')).toBeInTheDocument();
-    expect(screen.getByText('通识')).toBeInTheDocument();
+    expect(screen.getByText('仅根据视频回答')).toBeInTheDocument();
+    expect(screen.getByText('结合视频与通识回答')).toBeInTheDocument();
     expect(screen.getByText('联网')).toBeInTheDocument();
   });
 
@@ -169,6 +169,7 @@ describe('FollowupMessages', () => {
     );
     expect(screen.getByText('正在回答...')).toBeInTheDocument();
     expect(screen.queryByTestId('markdown-message')).toBeNull();
+    expect(screen.queryByRole('button', { name: '复制文字' })).toBeNull();
   });
 
   it('streaming 阶段不提取"继续追问"建议（避免半截内容触发按钮）', () => {
@@ -241,6 +242,44 @@ describe('FollowupMessages', () => {
       }),
       true,
     );
+  });
+
+  it('复制完成的回答正文，不包含继续追问建议', async () => {
+    installChromePortStub();
+    const onSubmitSuggestion = vi.fn();
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    const originalClipboard = Object.getOwnPropertyDescriptor(navigator, 'clipboard');
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText },
+    });
+    try {
+      render(
+        <FollowupMessages
+          messages={[
+            makeUserMessage('u1', 'BM25 是什么？'),
+            makeAssistantMessage('a1', '视频主要讲 **BM25**。\n\n---\n\n**可以继续问：**\n- 为什么？'),
+          ]}
+          phase={{ kind: 'idle' }}
+          suggestionDisabled={false}
+          onSubmitSuggestion={onSubmitSuggestion}
+          onToggleExchangeInReview={() => undefined}
+        />,
+      );
+      fireEvent.click(screen.getByRole('button', { name: /为什么/ }));
+      expect(onSubmitSuggestion).toHaveBeenCalledWith('为什么？');
+      fireEvent.click(screen.getByRole('button', { name: '复制文字' }));
+      await waitFor(() => {
+        expect(writeText).toHaveBeenCalledWith('视频主要讲 **BM25**。');
+        expect(screen.getByRole('button', { name: '已复制' })).toBeInTheDocument();
+      });
+    } finally {
+      if (originalClipboard) {
+        Object.defineProperty(navigator, 'clipboard', originalClipboard);
+      } else {
+        Reflect.deleteProperty(navigator, 'clipboard');
+      }
+    }
   });
 
   it('已加入笔记的问答在提问页可移出', () => {

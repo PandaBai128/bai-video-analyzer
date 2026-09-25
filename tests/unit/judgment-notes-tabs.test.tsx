@@ -2,7 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { AnalysisTab } from '@extension/sidepanel/components/AnalysisTab';
 import { NotesTab } from '@extension/sidepanel/components/NotesTab';
-import type { LearningSession } from '@core/types';
+import type { LearningSession, VideoAnalysis } from '@core/types';
 
 const localeMock = vi.hoisted(() => ({
   locale: 'zh-CN' as 'zh-CN' | 'en-US',
@@ -60,7 +60,13 @@ const SESSION: LearningSession = {
         ],
       },
       verdict: '值得看，重点看任务拆解和案例。',
-      overallMeaning: '这个视频主要讲如何把复杂任务拆成可执行步骤，适合节省试错时间。',
+      overallMeaning: '这个视频主要讲如何把**复杂任务拆成步骤**。作者先讲目标，再用案例说明实际做法。',
+      contentPoints: [
+        { title: '先明确目标', detail: '作者先说明任务拆解要解决的问题。', timestamp: 10 },
+        { title: '再拆成步骤', detail: '把复杂任务拆到可以实际执行的粒度。', timestamp: 522 },
+      ],
+      coreViewpoints: ['**先定目标**，再决定怎么拆。', '步骤要小到可以实际执行。'],
+      quickJumps: [{ timestamp: 522, title: '任务拆解示例', reason: '这里演示具体做法。' }],
       reason: '中段进入可复用方法，能直接迁移到自己的项目；片尾闲聊信息密度低。',
       worthReasons: ['中段进入可复用方法，能直接迁移到自己的项目。'],
       bestFor: ['想学习任务拆解方法的人', '需要快速判断教程价值的人'],
@@ -172,6 +178,8 @@ function renderAnalysis(overrides: Partial<Parameters<typeof AnalysisTab>[0]> = 
     isPreparing: false,
     isMutating: false,
     isGeneratingGuide: false,
+    duration: 1200,
+    onSeek: vi.fn(),
     onStartAnalysis: vi.fn().mockResolvedValue(undefined),
     ...overrides,
   };
@@ -207,18 +215,17 @@ describe('AnalysisTab', () => {
   it('无内容底座时也只显示一次点击的快速分析入口', () => {
     const props = renderAnalysis({ session: null, hasContentContext: false });
     expect(screen.getByTestId('quick-start-guide')).toBeDefined();
-    expect(screen.getAllByText('快速预览').length).toBeGreaterThan(0);
-    expect(screen.getByText('先快速了解，再按需深入')).toBeDefined();
-    expect(screen.getByText('提炼结论与观点、定位重点、围绕内容提问并整理笔记。')).toBeDefined();
-    expect(screen.getByText('分析')).toBeDefined();
-    expect(screen.getByText('预览结论、观点和内容精华。')).toBeDefined();
+    expect(screen.getByText('快速看懂这期视频')).toBeDefined();
+    expect(screen.queryByText('提炼结论与观点、定位重点、围绕内容提问并整理笔记。')).toBeNull();
+    expect(screen.getByText('速览')).toBeDefined();
+    expect(screen.getByText('看懂内容与观点')).toBeDefined();
     expect(screen.getByText('导航')).toBeDefined();
-    expect(screen.getByText('生成时间线，快速跳到重点。')).toBeDefined();
+    expect(screen.getByText('按时间找到想看的片段')).toBeDefined();
     expect(screen.getByText('提问')).toBeDefined();
-    expect(screen.getByText('围绕当前片段或全片追问。')).toBeDefined();
+    expect(screen.getByText('有疑问，接着聊')).toBeDefined();
     expect(screen.getByText('笔记')).toBeDefined();
-    expect(screen.getByText('保存记录，导出 Markdown。')).toBeDefined();
-    fireEvent.click(screen.getByRole('button', { name: '开始快速分析' }));
+    expect(screen.getByText('留下有用的内容')).toBeDefined();
+    fireEvent.click(screen.getByRole('button', { name: '生成内容速览' }));
     expect(props.onStartAnalysis).toHaveBeenCalledTimes(1);
   });
 
@@ -226,9 +233,9 @@ describe('AnalysisTab', () => {
     const props = renderAnalysis({ session: null, hasContentContext: true });
 
     expect(screen.getByTestId('quick-start-guide')).toBeDefined();
-    expect(screen.getByText('先快速了解，再按需深入')).toBeDefined();
+    expect(screen.getByText('快速看懂这期视频')).toBeDefined();
 
-    fireEvent.click(screen.getByRole('button', { name: '开始快速分析' }));
+    fireEvent.click(screen.getByRole('button', { name: '生成内容速览' }));
     expect(props.onStartAnalysis).toHaveBeenCalledTimes(1);
   });
 
@@ -246,7 +253,7 @@ describe('AnalysisTab', () => {
     expect(progress).toBeDefined();
     expect(screen.getByTestId('analysis-generation-flow')).toBeDefined();
     expect(screen.getByText('正在生成视频分析')).toBeDefined();
-    expect(screen.getByText('快速预览已收起，正在生成分析')).toBeDefined();
+    expect(screen.getByText('正在生成内容速览')).toBeDefined();
     expect(screen.getByText('读取字幕和视频标题，建立内容底座')).toBeDefined();
     const status = screen.getByText(
       '正在生成视频分析，遇到很长很长很长很长很长很长的解析状态也不能撑出侧栏...',
@@ -256,20 +263,29 @@ describe('AnalysisTab', () => {
     expect(onCancelGenerateGuide).toHaveBeenCalledTimes(1);
   });
 
-  it('展示快速预览和辅助分析，不显示评分、观看等级或完整导航路线', () => {
-    renderAnalysis();
+  it('优先展示主线、具体观点和少量可跳转片段，不展示观看裁决', () => {
+    const props = renderAnalysis();
 
-    expect(screen.getByText('分析结果')).toBeDefined();
-    expect(screen.getByText('快速预览')).toBeDefined();
+    expect(screen.getByText('内容速览')).toBeDefined();
+    expect(screen.getByText('概述')).toBeDefined();
     expect(screen.getByText('方法教程')).toBeDefined();
-    expect(screen.getByText('这个视频主要讲如何把复杂任务拆成可执行步骤，适合节省试错时间。')).toBeDefined();
-    expect(screen.getByText('观看建议')).toBeDefined();
-    expect(screen.getByText('内容精华')).toBeDefined();
+    expect(screen.getByText('复杂任务拆成步骤').tagName).toBe('STRONG');
+    expect(screen.getByText('复杂任务拆成步骤').closest('p')?.className).not.toContain('font-medium');
+    expect(screen.getByText('作者先讲目标，再用案例说明实际做法。')).toBeDefined();
+    expect(screen.getByText('主要内容')).toBeDefined();
+    expect(screen.getByText('先明确目标')).toBeDefined();
+    expect(screen.getByText('把复杂任务拆到可以实际执行的粒度。')).toBeDefined();
     expect(screen.getByText('核心观点')).toBeDefined();
-    expect(screen.getByText('适合人群与查看方式')).toBeDefined();
-    expect(screen.getByText('适合深入了解')).toBeDefined();
-    expect(screen.getByText('可按需参考')).toBeDefined();
-    expect(screen.getByText('信息边界')).toBeDefined();
+    expect(screen.getByText('先定目标').tagName).toBe('STRONG');
+    expect(screen.queryByText('直接看这里')).toBeNull();
+    expect(screen.queryByRole('button', { name: '展开' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: /跳转到 0:10：先明确目标/ }));
+    expect(props.onSeek).toHaveBeenCalledWith(10);
+    fireEvent.click(screen.getByRole('button', { name: /跳转到 8:42：再拆成步骤/ }));
+    expect(props.onSeek).toHaveBeenCalledWith(522);
+    expect(screen.getByText('需要留意')).toBeDefined();
+    expect(screen.queryByText('适合人群与查看方式')).toBeNull();
+    expect(screen.queryByText('观看建议')).toBeNull();
     expect(screen.queryByText('综合评分')).toBeNull();
     expect(screen.queryByText('完整细看')).toBeNull();
     expect(screen.queryByText('86')).toBeNull();
@@ -284,26 +300,132 @@ describe('AnalysisTab', () => {
     expect(screen.queryByText('边看边打点')).toBeNull();
   });
 
-  it('英文界面使用快速分析语义', () => {
+  it('英文界面使用内容速览语义', () => {
     localeMock.locale = 'en-US';
     renderAnalysis();
 
-    expect(screen.getByText('Quick Preview')).toBeDefined();
-    expect(screen.getByText('Viewing Suggestion')).toBeDefined();
-    expect(screen.getByText('Content Highlights')).toBeDefined();
-    expect(screen.getByText('Core Viewpoints')).toBeDefined();
+    expect(screen.getByText('Content Overview')).toBeDefined();
+    expect(screen.getByText('Overview')).toBeDefined();
+    expect(screen.getByText('Main content')).toBeDefined();
+    expect(screen.getByText('Core viewpoints')).toBeDefined();
+    expect(screen.queryByText('Jump to these moments')).toBeNull();
     expect(screen.queryByText('Overall Score')).toBeNull();
   });
 
-  it('适合深入了解和可按需参考保持双卡片并列展示', () => {
-    renderAnalysis();
+  it('概述与分段全部直接可读，旧时间点并入匹配的内容', () => {
+    const props = renderAnalysis({
+      session: {
+        ...SESSION,
+        guide: {
+          ...SESSION.guide!,
+          decision: {
+            ...SESSION.guide!.decision,
+            overallMeaning: '视频讨论折叠屏的购前取舍。先谈屏幕指纹和解锁。再谈镜头配置与手感。结论是按自己在意的体验做选择。',
+            contentPoints: [
+              { title: '屏幕容易留下指纹', detail: '这一点需要经常擦拭。' },
+              { title: '侧边解锁不方便', detail: '作者认为没有面部识别会影响日常握持，手指要反复寻找侧边识别位置，换手使用时也需要调整动作，因此更希望同时提供两种解锁方式。' },
+            ],
+            quickJumps: [{ timestamp: 44, title: '解锁方式对比', reason: '集中讨论解锁。' }],
+          },
+        },
+      },
+    });
 
-    const grid = screen.getByTestId('audience-fit-grid');
-    expect(grid.getAttribute('class')).toContain('grid-cols-2');
-    expect(grid.textContent).toContain('适合深入了解');
-    expect(grid.textContent).toContain('可按需参考');
-    expect(grid.textContent).toContain('想学习任务拆解方法的人');
-    expect(grid.textContent).toContain('只想看娱乐内容的人');
+    expect(screen.getByText('折叠屏的购前取舍').tagName).toBe('STRONG');
+    expect(screen.getByText(/结论是按自己在意的体验做选择/)).toBeDefined();
+    expect(screen.getByText(/先谈屏幕指纹和解锁/)).toBeDefined();
+    const seekButton = screen.getByRole('button', { name: /跳转到 0:44：侧边解锁不方便/ });
+    const pointRow = seekButton.closest('li');
+    expect(pointRow?.firstElementChild?.textContent).toBe('02');
+    expect(seekButton.parentElement?.querySelector('h3')?.textContent).toBe('侧边解锁不方便');
+    fireEvent.click(seekButton);
+    expect(props.onSeek).toHaveBeenCalledWith(44);
+    const longDetail = screen.getByText(/作者认为没有面部识别会影响日常握持/);
+    expect(longDetail.className).not.toContain('-webkit-line-clamp:2');
+    expect(screen.queryByRole('button', { name: '展开补充' })).toBeNull();
+    expect(screen.queryByRole('button', { name: '展开' })).toBeNull();
+    expect(screen.queryByText('直接看这里')).toBeNull();
+  });
+
+  it('模型把整段标为加粗时，仅突出概述中的短关键词', () => {
+    renderAnalysis({
+      session: {
+        ...SESSION,
+        guide: {
+          ...SESSION.guide!,
+          decision: {
+            ...SESSION.guide!.decision,
+            overallMeaning: '**视频围绕 iPhone Duo 的屏幕、解锁和影像逐一说明购买前的取舍。**作者补充了手感与折痕问题。',
+          },
+        },
+      },
+    });
+    expect(screen.getByText('iPhone Duo').tagName).toBe('STRONG');
+    expect(screen.getByTestId('content-overview').querySelector('section')?.querySelectorAll('strong').length).toBe(1);
+  });
+
+  it('旧速览缺时间时可借已生成导航定位到对应片段', () => {
+    const analysis: VideoAnalysis = {
+      overview: '讨论折叠屏体验。',
+      watchStrategy: [],
+      coreTakeaways: [],
+      reviewSummary: '',
+      chapters: [],
+      timeline: [{ timestamp: 44, title: '侧边指纹解锁', summary: '解释侧边指纹解锁和面部识别的取舍。', importance: 'recommended' }],
+      quotes: [],
+      keyConcepts: [],
+      inspirations: [],
+      generatedAt: 1,
+      modelUsed: 'model',
+      sourceMode: 'subtitle',
+    };
+    const props = renderAnalysis({
+      analysis,
+      session: {
+        ...SESSION,
+        guide: {
+          ...SESSION.guide!,
+          decision: {
+            ...SESSION.guide!.decision,
+            contentPoints: [{ title: '侧边指纹解锁', detail: '作者讨论只有侧边指纹时的解锁取舍。' }],
+          },
+        },
+      },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /跳转到 0:44：侧边指纹解锁/ }));
+    expect(props.onSeek).toHaveBeenCalledWith(44);
+  });
+
+  it('旧缓存仍显示内容要点，并提供重新生成入口', () => {
+    const props = renderAnalysis({
+      session: {
+        ...SESSION,
+        guide: {
+          ...SESSION.guide!,
+          decision: { ...SESSION.guide!.decision, contentPoints: [], quickJumps: [] },
+        },
+      },
+    });
+    expect(screen.getByText(/中段进入可复用方法/)).toBeDefined();
+    fireEvent.click(screen.getByRole('button', { name: '重新生成，补全分段与观点' }));
+    expect(props.onStartAnalysis).toHaveBeenCalledWith(true);
+  });
+
+  it('已有分段但缺少独立观点的旧结果也能重新生成', () => {
+    const oldDecision = { ...SESSION.guide!.decision };
+    delete oldDecision.coreViewpoints;
+    const props = renderAnalysis({
+      session: {
+        ...SESSION,
+        guide: {
+          ...SESSION.guide!,
+          decision: oldDecision,
+        },
+      },
+    });
+    expect(screen.getByText('先明确目标')).toBeDefined();
+    fireEvent.click(screen.getByRole('button', { name: '重新生成，补全分段与观点' }));
+    expect(props.onStartAnalysis).toHaveBeenCalledWith(true);
   });
 
   it('快速预览展示内容类型和概括，不展示内部评分元数据', () => {
@@ -325,7 +447,7 @@ describe('AnalysisTab', () => {
 
     const contentTypePill = screen.getByText('观点评论');
     expect(contentTypePill.getAttribute('class')).toContain('bai-content-type-pill');
-    expect(contentTypePill.getAttribute('class')).toContain('bg-primary');
+    expect(contentTypePill.getAttribute('class')).toContain('bg-primary/10');
     expect(
       screen.getByText('一条从业者视角对绝区零3.0新场景「罗斯凯利法」英伦风美术的锐评视频。'),
     ).toBeDefined();
@@ -333,7 +455,7 @@ describe('AnalysisTab', () => {
     expect(screen.queryByText('综合评分')).toBeNull();
   });
 
-  it('分析短列表最多显示 3 条，旧观看等级不再显示', () => {
+  it('提醒只展示两条，旧观看等级与人群标签不再出现', () => {
     renderAnalysis({
       session: {
         ...SESSION,
@@ -353,11 +475,10 @@ describe('AnalysisTab', () => {
     });
 
     expect(screen.queryByText('快速浏览')).toBeNull();
-    expect(screen.getByText('理由 3')).toBeDefined();
-    expect(screen.queryByText('理由 4')).toBeNull();
-    expect(screen.getByText('不适合 3')).toBeDefined();
-    expect(screen.queryByText('不适合 4')).toBeNull();
-    expect(screen.getByText('保留 3')).toBeDefined();
+    expect(screen.queryByText('理由 3')).toBeNull();
+    expect(screen.queryByText('不适合 3')).toBeNull();
+    expect(screen.getByText('保留 2')).toBeDefined();
+    expect(screen.queryByText('保留 3')).toBeNull();
     expect(screen.queryByText('保留 4')).toBeNull();
   });
 

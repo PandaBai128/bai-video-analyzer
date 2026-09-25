@@ -25,6 +25,17 @@ const session: LearningSession = {
 };
 
 describe('buildLearningGuidePrompt', () => {
+  it('长视频抽样仍使用完整字幕中的原始编号', () => {
+    const transcriptCues = Array.from({ length: 100 }, (_, index) => ({
+      start: index * 3,
+      text: `第${index}段${'内容'.repeat(75)}`,
+    }));
+    const prompt = buildLearningGuidePrompt({ metadata, transcriptCues, analysis: null, session });
+    expect(prompt).toContain('#1 [0:03] 第1段');
+    expect(prompt).toContain('#99 [4:57] 第99段');
+    expect(prompt).not.toContain('#0 [0:03] 第1段');
+  });
+
   it('要求模型按内容类型生成中性快速分析，而不是套固定学习模板', () => {
     const prompt = buildLearningGuidePrompt({
       metadata,
@@ -34,7 +45,13 @@ describe('buildLearningGuidePrompt', () => {
     });
     expect(prompt).toContain('不要把所有视频都当课程');
     expect(prompt).toContain('bAI 视频分析助手');
-    expect(prompt).toContain('视频快速分析');
+    expect(prompt).toContain('内容速览');
+    expect(prompt).toContain('"contentPoints"');
+    expect(prompt).toContain('"coreViewpoints"');
+    expect(prompt).toContain('"quickJumps"');
+    expect(prompt).toContain('必须取 <transcript_sample> 中对应话题开始的 #字幕编号');
+    expect(prompt).toContain('#0 [0:00] 今天我们看这个粉色特效有多离谱。');
+    expect(prompt).toContain('"startCueId": null');
     expect(prompt).toContain('视频主要讲什么、有哪些结论和观点、重点是什么');
     expect(prompt).toContain('不要对作者或视频下“好 / 坏 / 值得 / 不值得”的绝对结论');
     expect(prompt).toContain('"decision"');
@@ -59,7 +76,7 @@ describe('buildLearningGuidePrompt', () => {
     expect(prompt).toContain('风险/成本类维度按正向理解：高分表示边界较清晰或成本较低');
     expect(prompt).toContain('每项只填 label 和 score，不要输出 reason');
     expect(prompt).toContain('{ "label": "按 kind 选择对应固定维度", "score": 0 }');
-    expect(prompt).toContain('overallMeaning 必须直接概括视频主线、主要结论或观点');
+    expect(prompt).toContain('overallMeaning 必须让没看过视频的人知道讨论对象、展开脉络和主要落点');
     expect(prompt).toContain('访谈/Q&A：说明谁在回答什么');
     expect(prompt).toContain('娱乐/reaction/vlog：说明情绪价值、节目效果');
     expect(prompt).not.toContain('"reason": "短句说明为什么这一项这样评分');
@@ -79,18 +96,24 @@ describe('buildLearningGuidePrompt', () => {
     expect(prompt).not.toContain('"canSkip"');
     expect(prompt).toContain('不要输出 timePlans / mustWatch / canWatch / canSkim / canSkip');
     expect(prompt).toContain('娱乐、吐槽、reaction');
-    expect(prompt).toContain('worthReasons、notFor、learningValue、reservations 每组最多 3 条');
+    expect(prompt).toContain('contentPoints 写 2-6 条按视频推进顺序排列的主要内容');
+    expect(prompt).toContain('coreViewpoints 写 2-4 条作者明确表达的具体看法');
+    expect(prompt).toContain('quickJumps 固定输出 []');
     expect(prompt).toContain('worth_watching：适合按顺序或系统了解');
     expect(prompt).toContain('quick_browse：通过快速预览即可掌握主要内容');
     expect(prompt).toContain('skip：更适合作为资料按需查阅');
-    expect(prompt).toContain('不要用“完整细看 / 选择性看 / 快速浏览 / 可以跳过”或“值得 / 不值得”作为 verdict 开头');
+    expect(prompt).toContain(
+      '不要用“完整细看 / 选择性看 / 快速浏览 / 可以跳过”或“值得 / 不值得”作为 verdict 开头',
+    );
     expect(prompt).toContain('60-79 通常 selective');
     expect(prompt).toContain('40-59 通常 quick_browse');
     expect(prompt).toContain('valueProfile 必须存在');
     expect(prompt).toContain('criteria 必须使用 valueProfile.kind 对应的固定清单');
-    expect(prompt).toContain('rating、score 和 valueProfile 是为兼容现有数据结构保留的内部参考元数据');
-    expect(prompt).toContain('worthReasons 是兼容字段名，内容应回答“视频有哪些内容精华”');
-    expect(prompt).toContain('notFor 是兼容字段名，内容应描述“哪些人或场景只需按需参考”');
+    expect(prompt).toContain(
+      'rating、score 和 valueProfile 是为兼容现有数据结构保留的内部参考元数据',
+    );
+    expect(prompt).toContain('worthReasons 是兼容字段名，可简短列视频内容精华');
+    expect(prompt).toContain('bestFor / notFor 默认输出空数组');
     expect(prompt).toContain(
       '不要输出旧 cards、旧 mentor、旧 goalOptions、旧 watchStrategy 或旧 noteStrategy',
     );

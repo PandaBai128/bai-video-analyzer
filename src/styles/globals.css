@@ -741,3 +741,15 @@ button,
 input {
   font: inherit;
 }
+
+/* 提问侧栏空间有限，收紧回答标题和分隔线的默认 prose 间距。 */
+.bai-message-bubble-assistant .bai-markdown-message :where(h1, h2, h3, h4) {
+  margin-top: 0.75rem;
+  margin-bottom: 0.375rem;
+}
+.bai-message-bubble-assistant .bai-markdown-message > :first-child {
+  margin-top: 0;
+}
+.bai-message-bubble-assistant .bai-markdown-message hr {
+  margin-block: 0.75rem;
+}

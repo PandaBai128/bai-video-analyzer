@@ -22,7 +22,11 @@ export function FeatureTabs(props: FeatureTabsProps): JSX.Element {
     readonly label: string;
     readonly ariaLabel: string;
   }[] = [
-    { value: 'analysis', label: t('分析', 'Analysis'), ariaLabel: t('分析', 'Analysis') },
+    {
+      value: 'analysis',
+      label: t('速览', 'Overview'),
+      ariaLabel: t('内容速览', 'Content Overview'),
+    },
     { value: 'navigation', label: t('导航', 'Nav'), ariaLabel: t('导航', 'Navigation') },
     { value: 'followup', label: t('提问', 'Ask'), ariaLabel: t('提问', 'Ask') },
     { value: 'notes', label: t('笔记', 'Notes'), ariaLabel: t('笔记', 'Notes') },

@@ -130,28 +130,27 @@ describe('buildFollowupChatPrompt (追问 prompt 必含项)', () => {
     expect(system).toMatch(/请围绕当前视频内容提问/);
   });
 
-  it('system prompt 共同约束：提问服务学习理解，证据不足时不能硬下结论', () => {
+  it('system prompt 共同约束：提问按当前问题回答，证据不足时不能硬下结论', () => {
     const { system } = buildFollowupChatPrompt({
       question: '这个视频有哪些观点值得参考？',
       contextPackage: buildPackage(),
       selectedContext: selectFor(buildPackage(), '这个视频有哪些观点值得参考？'),
     });
     expect(system).toMatch(/bAI 视频分析助手/);
-    expect(system).toMatch(/学习追问助手/);
-    expect(system).toMatch(/视频整体讲了什么|当前片段怎么理解|从这里往后重点怎么看|核心观点和保留意见/);
+    expect(system).toMatch(/视频问答助手/);
+    expect(system).toContain('优先回答当前问题');
     expect(system).toMatch(/仅凭当前视频证据无法判断/);
     expect(system).toMatch(/不要用通识替用户下视频结论/);
   });
 
-  it('system prompt 约束提问页不要搬分析页或导航页模板', () => {
+  it('system prompt 不强制学习视角或统一栏目', () => {
     const { system } = buildFollowupChatPrompt({
       question: '整体讲什么？',
       contextPackage: buildPackage(),
       selectedContext: selectFor(buildPackage(), '整体讲什么？'),
     });
-    expect(system).toContain('提问页不要搬分析页或导航页模板');
-    expect(system).toMatch(/完整细看.*选择性看.*快速浏览/);
-    expect(system).toMatch(/观看路线|适合不适合|最值得看|可轻放/);
+    expect(system).toContain('不默认套用学习视角');
+    expect(system).toContain('不要求每次使用相同标题');
   });
 
   it('system prompt 共同约束：不要假装看过其他视频', () => {

@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f6f8f5" />
+    <meta
+      name="description"
+      content="视频有点长？让 bAI 陪你先看看重点。支持哔哩哔哩和 YouTube 的视频分析、内容导航、提问和笔记。"
+    />
+    <title>bAI 视频分析助手｜长视频，也能轻松看</title>
+    <link rel="icon" type="image/png" href="/assets/icon-128.png" />
+    <link rel="stylesheet" href="/styles.css?v=20260926-1" />
+    <link rel="stylesheet" href="/assets/sections.css?v=20260926-1" />
+    <link rel="stylesheet" href="/assets/responsive.css?v=20260926-1" />
+    <script defer src="/assets/vendor/gsap.min.js"></script>
+    <script defer src="/assets/vendor/ScrollTrigger.min.js"></script>
+    <script defer src="/assets/site.js?v=20260926-1"></script>
+  </head>
+  <body>
+    <svg class="icon-sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+      <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6" /></symbol>
+      <symbol id="i-download" viewBox="0 0 24 24">
+        <path d="M12 3v12m-5-5 5 5 5-5M5 16v4h14v-4" />
+      </symbol>
+      <symbol id="i-spark" viewBox="0 0 24 24">
+        <path d="m12 3 2.6 6.4L21 12l-6.4 2.6L12 21l-2.6-6.4L3 12l6.4-2.6L12 3Z" />
+      </symbol>
+      <symbol id="i-play" viewBox="0 0 24 24"><path d="m9 5 10 7-10 7V5Z" /></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6" /></symbol>
+      <symbol id="i-copy" viewBox="0 0 24 24">
+        <rect x="8" y="8" width="12" height="12" rx="2" />
+        <path d="M16 8V4H4v12h4" />
+      </symbol>
+      <symbol id="i-note" viewBox="0 0 24 24">
+        <path d="M14 3H5v18h14V8l-5-5Zm0 0v5h5M8 12h8m-8 4h5" />
+      </symbol>
+    </svg>
+    <a class="skip-link" href="#main">跳到正文</a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="/" aria-label="bAI 视频分析助手首页"
+          ><img src="/assets/icon-128.png" width="34" height="34" alt="" /><span
+            >bAI <span class="brand-name">视频分析助手</span></span
+          ></a
+        >
+        <nav aria-label="主导航">
+          <a href="#experience">看看怎么用</a><a href="#install">安装方法</a
+          ><a class="nav-download" href="/latest.zip" download
+            >免费下载 <svg class="icon"><use href="#i-download" /></svg
+          ></a>
+        </nav>
+      </div>
+      <div class="reading-progress" aria-hidden="true"></div>
+    </header>
+    <main id="main">
+      <section class="hero container">
+        <div class="hero-copy">
+          <p class="eyebrow hero-enter">
+            <span class="live-dot"></span> 看视频时，身边多一个小帮手
+          </p>
+          <h1 class="hero-enter">
+            长视频，<br />也能<span class="title-mark"
+              >轻松看<svg viewBox="0 0 270 18" aria-hidden="true">
+                <path d="M4 12Q124-4 263 9M32 16Q150 4 239 13" /></svg></span
+            >。
+          </h1>
+          <p class="hero-description hero-enter">
+            先看看重点，再找到想看的那一段。<br />有疑问就问一句，有收获就记下来。
+          </p>
+          <div class="hero-actions hero-enter">
+            <a class="button button-dark" href="/latest.zip" download
+              >下载 bAI，试试看 <svg class="icon"><use href="#i-download" /></svg></a
+            ><a class="quiet-link" href="#experience">往下看看 <span aria-hidden="true">↓</span></a>
+          </div>
+          <p class="hero-meta hero-enter">
+            Chrome 扩展 <span>·</span> 免费下载 <span>·</span> v0.1.2
+          </p>
+          <div class="platforms hero-enter">
+            <span>陪你看</span
+            ><span class="platform-bili"
+              ><svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3" y="7" width="18" height="14" rx="4" />
+                <path d="m7 2 4 5m6-5-4 5M8 12v4m8-4v4" /></svg
+              >哔哩哔哩</span
+            ><span class="platform-youtube"
+              ><svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="2" y="5" width="20" height="14" rx="4" />
+                <path d="m10 9 5 3-5 3Z" /></svg
+              >YouTube</span
+            >
+          </div>
+        </div>
+        <div class="hero-art">
+          <div class="art-orbit orbit-one" aria-hidden="true"></div>
+          <div class="art-orbit orbit-two" aria-hidden="true"></div>
+          <div class="demo-shell" data-tilt>
+            <div class="demo-toolbar">
+              <div class="window-dots" aria-hidden="true"><i></i><i></i><i></i></div>
+              <span>和 bAI 一起看视频</span><svg class="icon"><use href="#i-spark" /></svg>
+            </div>
+            <div class="demo-video">
+              <div class="video-caption">
+                <span>一段关于阅读的分享</span>
+                <h2>我们为什么<br />要读书？</h2>
+                <span class="video-duration">10 分钟，慢慢聊</span>
+              </div>
+              <div class="book-scene" aria-hidden="true">
+                <div class="book book-one"></div>
+                <div class="book book-two"></div>
+                <div class="book book-three"></div>
+                <div class="book-star">✳</div>
+              </div>
+              <span class="demo-label">功能示意</span>
+            </div>
+            <div class="demo-assistant">
+              <div class="assistant-heading">
+                <img src="/assets/icon-128.png" width="26" height="26" alt="" /><strong
+                  >bAI 帮你理一理</strong
+                ><span>已准备好</span>
+              </div>
+              <div class="demo-tabs" role="tablist" aria-label="体验功能示意">
+                <button
+                  id="demo-tab-0"
+                  role="tab"
+                  aria-selected="true"
+                  aria-controls="demo-panel-0"
+                  data-demo-tab="0"
+                >
+                  看重点</button
+                ><button
+                  id="demo-tab-1"
+                  role="tab"
+                  aria-selected="false"
+                  aria-controls="demo-panel-1"
+                  tabindex="-1"
+                  data-demo-tab="1"
+                >
+                  找片段</button
+                ><button
+                  id="demo-tab-2"
+                  role="tab"
+                  aria-selected="false"
+                  aria-controls="demo-panel-2"
+                  tabindex="-1"
+                  data-demo-tab="2"
+                >
+                  问一句
+                </button>
+              </div>
+              <div class="demo-panels">
+                <div
+                  id="demo-panel-0"
+                  class="demo-panel"
+                  role="tabpanel"
+                  aria-labelledby="demo-tab-0"
+                >
+                  <span class="small-label">这段视频在聊什么</span>
+                  <p>读书不只是为了“有用”，<br />也让我们多一种看世界的方式。</p>
+                  <div class="demo-tags">
+                    <span>阅读的意义</span><span>认识自己</span><span>保持好奇</span>
+                  </div>
+                </div>
+                <div
+                  id="demo-panel-1"
+                  class="demo-panel"
+                  role="tabpanel"
+                  aria-labelledby="demo-tab-1"
+                  hidden
+                >
+                  <div class="mini-chapter">
+                    <span>00:00</span><strong>为什么要读书</strong
+                    ><svg class="icon"><use href="#i-play" /></svg>
+                  </div>
+                  <div class="mini-chapter selected">
+                    <span>03:54</span><strong>有些收获，没那么功利</strong
+                    ><svg class="icon"><use href="#i-play" /></svg>
+                  </div>
+                  <p class="demo-footnote">在插件里，点击时间就能跳过去。</p>
+                </div>
+                <div
+                  id="demo-panel-2"
+                  class="demo-panel"
+                  role="tabpanel"
+                  aria-labelledby="demo-tab-2"
+                  hidden
+                >
+                  <div class="mini-question">这一段想告诉我什么？</div>
+                  <p class="mini-answer">
+                    有些阅读不会立刻派上用场，<br />却会慢慢影响我们理解生活的方式。
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="floating-note note-top">
+            <svg class="icon"><use href="#i-check" /></svg>重点，先帮你找好了
+          </div>
+          <div class="floating-note note-bottom">
+            <svg class="icon"><use href="#i-note" /></svg>这一句，值得记下来
+          </div>
+        </div>
+      </section>
+
+      <section class="intro container reveal">
+        <span class="section-label">想看得明白，也想看得自在</span>
+        <h2>一条视频，<span>按你的节奏看。</span></h2>
+        <p>课程、播客、教程、分享……打开熟悉的视频页面，就能开始。</p>
+      </section>
+
+      <section class="experience container" id="experience" aria-label="三个步骤了解 bAI">
+        <div class="experience-preview">
+          <div class="preview-sticky">
+            <div class="preview-topline">
+              <span><i></i> 插件里的真实画面</span
+              ><span class="preview-count" aria-hidden="true">01 / 03</span>
+            </div>
+            <div class="screenshot-stage">
+              <figure class="story-frame is-active" data-frame="0">
+                <img
+                  src="/assets/analysis.png"
+                  width="1078"
+                  height="1850"
+                  alt="bAI 内容速览，展示概述、带时间的主要内容与核心观点"
+                />
+              </figure>
+              <figure class="story-frame" data-frame="1" aria-hidden="true">
+                <img
+                  src="/assets/navigation.png"
+                  width="836"
+                  height="1990"
+                  alt="bAI 导航界面，按时间列出视频中的话题"
+                  loading="lazy"
+                />
+              </figure>
+              <figure class="story-frame" data-frame="2" aria-hidden="true">
+                <img
+                  src="/assets/question.png"
+                  width="1034"
+                  height="1992"
+                  alt="bAI 提问界面，围绕视频片段解释内容"
+                  loading="lazy"
+                />
+              </figure>
+            </div>
+            <div class="preview-bottom">
+              <span>示例：《我们为什么要读书？》</span
+              ><a class="full-shot" href="/assets/analysis.png" target="_blank" rel="noopener"
+                >查看完整截图 <span aria-hidden="true">↗</span></a
+              >
+            </div>
+          </div>
+        </div>
+        <div class="story-steps">
+          <article class="story-step is-active" data-step="0">
+            <div class="step-line" aria-hidden="true"><span>01</span></div>
+            <div class="step-copy">
+              <p class="section-label">先看重点</p>
+              <h3>这条视频讲什么，<br />先有个数。</h3>
+              <p>
+                把主要内容和有意思的观点理出来。<br
+                  class="desktop-break"
+                />想仔细看，还是先看一小段，都由你决定。
+              </p>
+              <button class="story-button" data-show-frame="0" aria-pressed="true">
+                看看速览 <svg class="icon"><use href="#i-arrow" /></svg>
+              </button>
+            </div>
+            <a class="mobile-shot" href="/assets/analysis.png" target="_blank" rel="noopener"
+              ><img
+                src="/assets/analysis.png"
+                width="1078"
+                height="1850"
+                alt="打开完整分析截图"
+                loading="lazy"
+            /></a>
+          </article>
+          <article class="story-step" data-step="1">
+            <div class="step-line" aria-hidden="true"><span>02</span></div>
+            <div class="step-copy">
+              <p class="section-label">再找片段</p>
+              <h3>想看的那一段，<br />不用来回拖。</h3>
+              <p>视频变成一张小目录。<br class="desktop-break" />点一下时间，就到你关心的地方。</p>
+              <button class="story-button" data-show-frame="1" aria-pressed="false">
+                看看导航 <svg class="icon"><use href="#i-arrow" /></svg>
+              </button>
+            </div>
+            <a class="mobile-shot" href="/assets/navigation.png" target="_blank" rel="noopener"
+              ><img
+                src="/assets/navigation.png"
+                width="836"
+                height="1990"
+                alt="打开完整导航截图"
+                loading="lazy"
+            /></a>
+          </article>
+          <article class="story-step" data-step="2">
+            <div class="step-line" aria-hidden="true"><span>03</span></div>
+            <div class="step-copy">
+              <p class="section-label">随时问一句</p>
+              <h3>没听明白？<br />就接着问。</h3>
+              <p>
+                “这里是什么意思？”“能举个例子吗？”<br
+                  class="desktop-break"
+                />像和朋友聊天一样，把疑问慢慢弄懂。
+              </p>
+              <button class="story-button" data-show-frame="2" aria-pressed="false">
+                看看提问 <svg class="icon"><use href="#i-arrow" /></svg>
+              </button>
+            </div>
+            <a class="mobile-shot" href="/assets/question.png" target="_blank" rel="noopener"
+              ><img
+                src="/assets/question.png"
+                width="1034"
+                height="1992"
+                alt="打开完整提问截图"
+                loading="lazy"
+            /></a>
+          </article>
+        </div>
+      </section>
+
+      <section class="notes-section container reveal">
+        <div class="notes-illustration" aria-hidden="true">
+          <div class="note-paper">
+            <span>今天记下的</span><strong>保持好奇，<br />也是一种收获。</strong>
+            <div class="paper-line"></div>
+            <div class="paper-line short"></div>
+            <span class="paper-tag">我的视频笔记.md</span>
+          </div>
+          <svg class="note-spark" viewBox="0 0 24 24"><use href="#i-spark" /></svg>
+        </div>
+        <div class="notes-copy">
+          <span class="section-label">看完，也留下一点收获</span>
+          <h2>喜欢的那句话，<br />顺手记下来。</h2>
+          <p>
+            把有用的回答放进笔记，再加上自己的想法。<br />随时导出 Markdown，带去你喜欢的笔记工具。
+          </p>
+          <span class="local-note"
+            ><svg class="icon"><use href="#i-check" /></svg>笔记保存在你的浏览器里</span
+          >
+        </div>
+      </section>
+
+      <section class="install-section" id="install">
+        <div class="container">
+          <div class="install-heading reveal">
+            <div>
+              <span class="section-label">准备好了，就试试看</span>
+              <h2>下一条视频，<br />让 bAI 陪你看。</h2>
+            </div>
+            <div class="download-block">
+              <a class="button button-green" href="/latest.zip" download
+                >免费下载 v0.1.2 <svg class="icon"><use href="#i-download" /></svg
+              ></a>
+              <p>Chrome 114+ · ZIP 安装包 · 手动安装</p>
+            </div>
+          </div>
+          <ol class="install-steps">
+            <li class="reveal">
+              <span class="install-number">1</span>
+              <h3>下载，解压</h3>
+              <p>把文件夹放在一个固定位置。<br />安装后也记得留着它。</p>
+            </li>
+            <li class="reveal">
+              <span class="install-number">2</span>
+              <h3>加载到 Chrome</h3>
+              <p>
+                打开扩展管理页，开启“开发者模式”，<br />选择“加载已解压的扩展程序”，找到
+                <code>dist</code> 文件夹。
+              </p>
+              <button
+                class="copy-link"
+                data-copy="chrome://extensions/"
+                data-copy-label="复制扩展管理页地址"
+              >
+                复制扩展管理页地址 <svg class="icon"><use href="#i-copy" /></svg>
+              </button>
+            </li>
+            <li class="reveal">
+              <span class="install-number">3</span>
+              <h3>填上邀请码，就好啦</h3>
+              <p>设置里选择“bAI 免费服务”，填入下方邀请码。也可以用自己的模型 API。</p>
+              <button
+                class="invite-code"
+                data-copy="thankyoupanda"
+                data-copy-label="复制邀请码"
+                aria-label="复制邀请码 thankyoupanda"
+              >
+                <code>thankyoupanda</code><svg class="icon"><use href="#i-copy" /></svg>
+              </button>
+            </li>
+          </ol>
+          <p class="quota-note">
+            公共体验额度大家一起用，用完了就稍等一等。看 B
+            站视频前，记得先登录账号，让插件能读取可用字幕。
+          </p>
+          <div class="help-row">
+            <details>
+              <summary>已经装好了，怎么更新？<span aria-hidden="true">+</span></summary>
+              <p>
+                把新版 ZIP 解压到原安装目录，覆盖文件，再到 <code>chrome://extensions/</code> 点击
+                bAI 的“重新加载”。目前需要手动更新，设置和笔记会保留在原扩展里。
+              </p>
+            </details>
+            <details>
+              <summary>下载信息与校验值<span aria-hidden="true">+</span></summary>
+              <p>
+                当前版本 v0.1.2 ·
+                <a href="/downloads/bai-video-analyzer-v0.1.2.zip" download>下载此版本</a> ·
+                <a href="/latest.json">版本信息</a>
+              </p>
+              <p class="checksum">
+                SHA-256<br /><code
+                  >ae7e791a5b2653791b7be9d4e5a80b01363513bb424a42684879673ed1d2d62b</code
+                >
+              </p>
+            </details>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="container site-footer">
+      <a class="brand" href="/" aria-label="返回首页"
+        ><img src="/assets/icon-128.png" width="28" height="28" alt="" /><span
+          >bAI <span class="brand-name">视频分析助手</span></span
+        ></a
+      >
+      <p>愿每一次观看，都有一点收获。</p>
+      <div>
+        <a href="https://github.com/PandaBai128/bai-video-analyzer" target="_blank" rel="noopener"
+          >开源代码 ↗</a
+        ><a
+          href="https://github.com/PandaBai128/bai-video-analyzer/issues"
+          target="_blank"
+          rel="noopener"
+          >聊聊你的建议 ↗</a
+        >
+      </div>
+    </footer>
+    <div class="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>

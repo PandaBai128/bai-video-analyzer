@@ -9,6 +9,7 @@ import type {
   LearningGuideTimePlan,
   LearningGuideValueProfile,
   LearningGuideValueProfileKind,
+  SubtitleCue,
 } from '@core/types';
 import { DEFAULT_UI_LOCALE, type UiLocale } from '@shared/locale-settings';
 import { normalizeValueProfileCriteria } from './value-profile-criteria';
@@ -93,6 +94,19 @@ const decisionSegmentSchema = z.object({
 
 const textArraySchema = z.array(z.unknown()).max(8).default([]).catch([]);
 
+const contentPointSchema = z.object({
+  title: optionalText,
+  detail: optionalText,
+  timestamp: optionalTimestamp,
+  startCueId: z.number().int().nonnegative().optional().catch(undefined),
+});
+
+const quickJumpSchema = z.object({
+  timestamp: optionalTimestamp,
+  title: optionalText,
+  reason: optionalText,
+});
+
 const rawTimePlanSchema = z.object({
   budget: z.enum(['10min', '20min', '40min', 'full']).default('full').catch('full'),
   label: optionalText,
@@ -106,6 +120,9 @@ const decisionSchema = z.object({
   valueProfile: valueProfileSchema,
   verdict: optionalText,
   overallMeaning: optionalText,
+  contentPoints: z.array(z.unknown()).max(10).default([]).catch([]),
+  coreViewpoints: textArraySchema,
+  quickJumps: z.array(z.unknown()).max(6).default([]).catch([]),
   reason: optionalText,
   worthReasons: textArraySchema,
   bestFor: textArraySchema,
@@ -131,13 +148,14 @@ export function parseLearningGuideJson(input: {
   readonly generatedAt: number;
   readonly modelUsed: string;
   readonly outputLocale?: UiLocale;
+  readonly transcriptCues?: readonly SubtitleCue[];
 }): LearningGuide {
   const outputLocale = input.outputLocale ?? DEFAULT_UI_LOCALE;
   const jsonText = stripJsonFence(input.content);
   const parsed = rawLearningGuideSchema.parse(
     unwrapLearningGuideJson(parseJsonWithRepair(jsonText)),
   );
-  const decision = normalizeDecision(parsed.decision, outputLocale);
+  const decision = normalizeDecision(parsed.decision, outputLocale, input.transcriptCues ?? []);
   return {
     decision,
     contentType: parsed.contentType ?? getDefaultContentType(outputLocale),
@@ -172,6 +190,7 @@ function getRecord(value: unknown): Record<string, unknown> | null {
 function normalizeDecision(
   decision: z.infer<typeof decisionSchema>,
   outputLocale: UiLocale,
+  transcriptCues: readonly SubtitleCue[],
 ): LearningGuideDecision {
   const inferredRating =
     decision.rating ??
@@ -205,6 +224,36 @@ function normalizeDecision(
     valueProfile: normalizeValueProfile(decision.valueProfile, score, outputLocale),
     verdict,
     overallMeaning,
+    contentPoints: decision.contentPoints
+      .map((point) => contentPointSchema.safeParse(point))
+      .filter((point) => point.success)
+      .map(({ data }) => {
+        const cueTimestamp = data.startCueId === undefined
+          ? undefined
+          : transcriptCues[data.startCueId]?.start;
+        const timestamp = cueTimestamp ?? data.timestamp;
+        return {
+          title: data.title ?? '',
+          detail: data.detail ?? '',
+          ...(timestamp === undefined ? {} : { timestamp }),
+        };
+      })
+      .filter((point) => point.title && point.detail)
+      .slice(0, 6),
+    coreViewpoints: limitDecisionItems(decision.coreViewpoints, 4),
+    quickJumps: decision.quickJumps
+      .map((jump) => quickJumpSchema.safeParse(jump))
+      .filter((jump) => jump.success)
+      .map(({ data }) => ({
+        timestamp: data.timestamp,
+        title: data.title ?? '',
+        reason: data.reason ?? '',
+      }))
+      .filter(
+        (jump): jump is { timestamp: number; title: string; reason: string } =>
+          jump.timestamp !== undefined && Boolean(jump.title) && Boolean(jump.reason),
+      )
+      .slice(0, 3),
     reason,
     worthReasons,
     bestFor: limitDecisionItems(decision.bestFor, 3),
@@ -351,8 +400,7 @@ function normalizeTimePlans(
     plans.push({
       budget,
       label: parsed.data.label ?? getDefaultTimePlanLabel(budget, outputLocale),
-      instruction:
-        parsed.data.instruction ?? getDefaultTimePlanInstruction(outputLocale),
+      instruction: parsed.data.instruction ?? getDefaultTimePlanInstruction(outputLocale),
       segments: normalizeSegments(parsed.data.segments, outputLocale).slice(0, 6),
     });
     if (plans.length >= 4) break;
@@ -391,9 +439,7 @@ function normalizeSegment(
   const reason = firstNonEmpty(
     segment.reason,
     segment.title,
-    outputLocale === 'en-US'
-      ? 'The model did not explain this segment.'
-      : '模型没有说明片段理由。',
+    outputLocale === 'en-US' ? 'The model did not explain this segment.' : '模型没有说明片段理由。',
   );
   return {
     title,

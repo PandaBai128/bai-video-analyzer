@@ -310,12 +310,27 @@ export interface LearningGuideValueProfile {
   readonly criteria: readonly LearningGuideValueCriterion[];
 }
 
+export interface LearningGuideContentPoint {
+  readonly title: string;
+  readonly detail: string;
+  readonly timestamp?: number | undefined;
+}
+
+export interface LearningGuideQuickJump {
+  readonly timestamp: number;
+  readonly title: string;
+  readonly reason: string;
+}
+
 export interface LearningGuideDecision {
   readonly rating: LearningGuideDecisionRating;
   readonly score: number;
   readonly valueProfile: LearningGuideValueProfile;
   readonly verdict: string;
   readonly overallMeaning: string;
+  readonly contentPoints?: readonly LearningGuideContentPoint[];
+  readonly coreViewpoints?: readonly string[];
+  readonly quickJumps?: readonly LearningGuideQuickJump[];
   readonly reason: string;
   readonly worthReasons?: readonly string[];
   readonly bestFor: readonly string[];

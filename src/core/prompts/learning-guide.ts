@@ -12,7 +12,12 @@ export function buildLearningGuidePrompt(input: {
   const analysisText = formatAnalysisSummary(input.analysis);
   const transcriptText =
     pickGuideTranscriptCues(input)
-      .map((cue) => `[${formatSeconds(cue.start)}] ${cue.text}`)
+      .map((cue) => {
+        const cueId = input.transcriptCues.findIndex(
+          (source) => source.start === cue.start && source.text.startsWith(cue.text),
+        );
+        return `#${cueId} [${formatSeconds(cue.start)}] ${cue.text}`;
+      })
       .join('\n') || '没有可用字幕。';
   const timelineText = formatTimelineEvidence(input.analysis);
   const momentsText = input.session.moments.length
@@ -30,21 +35,22 @@ export function buildLearningGuidePrompt(input: {
   const criteriaGuidance = createCriteriaGuidance(outputLocale);
   const ratingGuidance = createRatingGuidance(outputLocale);
 
-  return `你是 bAI 视频分析助手的“视频快速分析”生成器。请基于视频证据生成便于快速预览的辅助分析：先说明视频讲什么、有哪些结论和观点，再提炼内容精华、适合人群、观看建议和信息边界。
+  return `你是 bAI 视频分析助手的“内容速览”生成器。用户打开这一页，应该直接知道视频在讲什么、各段讲了什么、作者有哪些核心观点。基于视频证据写出具体内容，不要只罗列话题名。
 
 ${outputLanguage}
-不要寒暄，不要 Markdown，只输出合法 JSON。
+不要寒暄，只输出合法 JSON；JSON 字符串中可以用 **文字** 标出少量重点，不要输出 Markdown 代码块。
 
 ## 关键原则
 
 - 优先回答“视频主要讲什么、有哪些结论和观点、重点是什么”。不要对作者或视频下“好 / 坏 / 值得 / 不值得”的绝对结论。
 - rating、score 和 valueProfile 是为兼容现有数据结构保留的内部参考元数据，不是用户可见的主结论，也不是作者能力或内容质量的绝对评分。
 - 必须先判断内容类型，再按该类型常见观看需求生成分析。不同类型不能共用同一把教程尺。
-- 分析页聚焦快速预览、观看建议、内容精华、核心观点、适合人群和信息边界。不要写成小作文。
+- 按四层组织内容：overallMeaning 概述整条视频 → contentPoints 按视频顺序概括主要内容和时间 → coreViewpoints 提炼作者的具体判断 → reservations 提醒证据边界。各层各司其职，不要把全部细节挤进概述，也不要把同一句话重复四遍。
+- contentPoints 数量随实际视频而定。标题说“五个细节”且字幕证实五点时，应覆盖五点；证据不足时不能为了凑数编造。
 - 所有时间判断必须服从 <metadata> 里的真实时长。不要说“5-6 分钟看完”一个 3 分钟视频；不要生成超过视频总时长的时间点。
 - 不要把所有视频都当课程。娱乐、吐槽、reaction、游戏实况、生活 vlog、新闻、播客、教程、论文解读、攻略、带货、争议讨论，都应按各自用途分析。
 - 不要输出旧 cards、旧 mentor、旧 goalOptions、旧 watchStrategy 或旧 noteStrategy。当前只保留 decision 主结构。
-- 独立分析页不展示观看路线，不要输出 timePlans / mustWatch / canWatch / canSkim / canSkip；具体片段定位交给“导航”生成。
+- 每条 contentPoints 要先从字幕中找该话题的开始位置，填对应的 #字幕编号 startCueId；只使用 <transcript_sample> 中出现的编号，不要自行换算或猜测秒数。确实无法定位才填 null。时间戳由程序按字幕编号映射，不另建跳转清单。quickJumps 为旧缓存兼容字段，新结果输出空数组。不要输出 timePlans / mustWatch / canWatch / canSkim / canSkip。
 
 ## 内容类型与参考维度
 
@@ -67,7 +73,7 @@ ${criteriaGuidance}
 ## 内容概括口径
 
 - contentType 要和 valueProfile.label 一致，使用用户能理解的短标签。
-- overallMeaning 必须直接概括视频主线、主要结论或观点，并说明这条视频主要满足什么观看目的；不要把访谈、娱乐、观点评论写成教程口径。
+- overallMeaning 必须让没看过视频的人知道讨论对象、展开脉络和主要落点；用约 2 句、80-120 字说清，不是只有一句结论。用 1-2 处 **加粗** 标出具体对象或关键取舍，每处只标 2-8 个汉字或一个简短名称，绝不加粗整句或整段。细节留给 contentPoints，文字直接展示，不能靠用户展开后才能读懂。不要把访谈、娱乐、观点评论写成教程口径。
 - 教程/学习类：说明它解决什么问题、方法是否完整、适合跟做到什么程度。
 - 访谈/Q&A：说明谁在回答什么、内容是具体信息、互动还是闲聊为主，以及适合完整了解还是按问题挑看。
 - 观点评论/杂谈：说明核心论点、视角来源、证据支撑强弱和是否只是主观表达。
@@ -117,11 +123,16 @@ ${momentsText}
       },
       "verdict": "${outputExamples.verdict}",
     "overallMeaning": "${outputExamples.overallMeaning}",
+    "contentPoints": [
+      { "title": "${outputExamples.contentPointTitle}", "detail": "${outputExamples.contentPointDetail}", "startCueId": null }
+    ],
+    "coreViewpoints": ["${outputExamples.coreViewpoint}"],
+    "quickJumps": [],
     "reason": "${outputExamples.reason}",
     "worthReasons": ["${outputExamples.worthReason}"],
-    "bestFor": ["${outputExamples.bestFor}"],
-    "notFor": ["${outputExamples.notFor}"],
-    "learningValue": ["${outputExamples.learningValue}"],
+    "bestFor": [],
+    "notFor": [],
+    "learningValue": [],
     "reservations": ["${outputExamples.reservation}"]
   },
   "contentType": "${outputExamples.contentType}",
@@ -130,18 +141,20 @@ ${momentsText}
 }
 
 约束：
-- decision 必须存在。overallMeaning 是快速预览主文案；verdict 是兼容字段中的凝练内容结论；reason 和 suggestedStance 提供中性、可执行的观看建议。不要用“完整细看 / 选择性看 / 快速浏览 / 可以跳过”或“值得 / 不值得”作为 verdict 开头。
+- decision 必须存在。overallMeaning 直接交代这条视频讲什么、怎样展开、最终围绕什么判断；不要只给结论，也不要写成长篇无分层的细节汇总。verdict、reason 和 suggestedStance 是兼容字段，不要让观看建议挤占内容描述。不要用“完整细看 / 选择性看 / 快速浏览 / 可以跳过”或“值得 / 不值得”作为 verdict 开头。
+- contentPoints 写 2-6 条按视频推进顺序排列的主要内容；短视频可以少于 3 条。title 是该段讲什么的短名称，detail 用约 20-40 字的一句话说明实际内容，只保留该段最重要的信息，不堆配置、例子和枝节，也不要把所有观点塞进同一条。每条尽力给 startCueId：必须取 <transcript_sample> 中对应话题开始的 #字幕编号；没有可靠依据才写 null，绝不猜位置或填写估算的 timestamp。quickJumps 固定输出 []。
+- coreViewpoints 写 2-4 条作者明确表达的具体看法，每条尽量一句话，可用 **加粗** 标出判断关键词；它回答“作者怎么看”，与 contentPoints 的“各段讲什么”区分。视频没有明确观点时可输出空数组，不能把通识或模型自己的评价冒充作者观点。
 - rating 只能四选一：
 ${ratingGuidance}
 - score 必须是 0-100 整数：80-100 通常 worth_watching；60-79 通常 selective；40-59 通常 quick_browse；0-39 通常 skip。
 - score 只表示内容呈现与当前类型常见观看需求的匹配参考，必须按 valueProfile.kind 的类型标准综合生成；不要把它解释为绝对质量或对作者的评价。
 - valueProfile 必须存在；criteria 必须使用 valueProfile.kind 对应的固定清单，每项只输出 label 和 score，不要输出 reason。
 - criteria 不要求数学平均等于 score，但每项分数应与 score 的参考含义一致。
-- worthReasons、notFor、learningValue、reservations 每组最多 3 条；如果不足 3 条就少写，不要硬凑。分析页空间很紧，禁止输出 4-5 条列表。
-- worthReasons 是兼容字段名，内容应回答“视频有哪些内容精华”；learningValue 回答“有哪些核心观点、结论或可迁移信息”；reservations 回答“信息边界、证据缺口或适用前提”。三者不能互相重复。
+- worthReasons、notFor、learningValue 是兼容旧数据的辅助字段；新结果的 learningValue 固定输出 []，核心观点写在 coreViewpoints，不重复生成。reservations 只写信息边界、证据缺口或适用前提，最多 3 条。
+- worthReasons 是兼容字段名，可简短列视频内容精华；不能重复复制 contentPoints。不要因此压缩或省略概述、分段和核心观点。
 - <optional_timeline> 是导航缓存提供的位置证据。独立分析可以参考它判断内容结构和证据强弱，但不要输出片段路线。
 - 如果一个工具、产品名或主题只在标题里出现、在 <optional_timeline> 和 <transcript_sample> 都没有明确证据，不要把它写成确定结论；不确定时写入 reservations。
-- bestFor 描述适合深入了解的人群或需求；notFor 是兼容字段名，内容应描述“哪些人或场景只需按需参考”，不要写成对人群的否定。
+- bestFor / notFor 默认输出空数组；只有视频明确讲了适用前提时才简短填写，不能根据题材推测人群。
 - 不要输出 timePlans / mustWatch / canWatch / canSkim / canSkip；这些路线信息由导航链路生成，独立分析只给快速预览和观看建议。
 - reservations 0-3 条；只写真正的信息边界、适用前提或证据缺口。
 - 如果视频更适合放松观看，要明确允许“只记录喜欢/不喜欢，不做严肃学习笔记”。`;
@@ -152,7 +165,7 @@ function createOutputLanguageInstruction(locale: UiLocale): string {
     return [
       'Output language: English.',
       'Hard rule: every user-visible JSON string value must be English even when metadata, subtitles, examples, and this prompt contain Chinese.',
-      'Translate contentType, valueProfile.label, criteria labels, verdict, reasons, list items, and stance into English.',
+      'Translate contentType, valueProfile.label, criteria labels, verdict, reasons, contentPoints, coreViewpoints, list items, and stance into English.',
       'Do not output Chinese generated prose or Chinese category labels. Only preserve proper names or very short quoted source phrases when necessary.',
       'Keep schema field names and enum values exactly as specified.',
       'If quoting original non-English subtitle terms, quote them briefly and explain in English.',
@@ -208,6 +221,9 @@ function createOutputExamples(locale: UiLocale): {
   readonly criterionLabel: string;
   readonly verdict: string;
   readonly overallMeaning: string;
+  readonly contentPointTitle: string;
+  readonly contentPointDetail: string;
+  readonly coreViewpoint: string;
   readonly reason: string;
   readonly worthReason: string;
   readonly bestFor: string;
@@ -225,13 +241,18 @@ function createOutputExamples(locale: UiLocale): {
       criterionLabel: 'Fixed English criterion label for the selected kind',
       verdict:
         'One neutral English sentence summarizing the central conclusion or viewpoint; do not judge the creator or declare the video worth/not worth watching',
-      overallMeaning:
-        '1-2 English sentences explaining the main thread, conclusions, and intended viewing purpose',
-      reason: 'One concrete English viewing suggestion grounded in the video content; avoid generic wording',
+      overallMeaning: 'About two concise sentences covering the subject, structure, and central concern; **emphasize** one or two short key phrases',
+      contentPointTitle: 'Short name of what this segment discusses',
+      contentPointDetail: 'One short sentence, about 20-40 Chinese characters or equivalent, on the most important content in this segment',
+      coreViewpoint: 'One concrete view actually expressed by the creator',
+      reason:
+        'One concrete English viewing suggestion grounded in the video content; avoid generic wording',
       worthReason: 'English content highlight or useful section, 0-3 items',
       bestFor: 'English audience or need suited to deeper viewing, 0-3 items; may be empty',
-      notFor: 'English audience or scenario that can reference only what is needed, 0-3 items; may be empty',
-      learningValue: 'Concrete English conclusion, viewpoint, or transferable information, 0-3 items',
+      notFor:
+        'English audience or scenario that can reference only what is needed, 0-3 items; may be empty',
+      learningValue:
+        'Concrete English conclusion, viewpoint, or transferable information, 0-3 items',
       reservation: 'English information boundary, evidence gap, or condition, 0-3 items',
       contentType:
         'English short label, e.g. Entertainment Clip / Gameplay Guide / Long Podcast Interview / Opinion Commentary / Product Review / Tutorial / Mixed Content',
@@ -242,9 +263,11 @@ function createOutputExamples(locale: UiLocale): {
   return {
     valueProfileLabel: '用户可见中文类型，例如：访谈 Q&A / 观点评论 / 攻略教程 / 娱乐反应',
     criterionLabel: '按 kind 选择对应固定维度',
-    verdict:
-      '一句中性的内容结论或核心观点，不评价作者，也不直接宣布视频值得或不值得看',
-    overallMeaning: '1-2 句说明视频主线、主要结论或观点，以及它适合满足什么观看需求',
+    verdict: '一句中性的内容结论或核心观点，不评价作者，也不直接宣布视频值得或不值得看',
+    overallMeaning: '约两句、80-120 字，说清讨论对象、展开脉络和主要落点；用 **加粗** 标出一两处具体重点',
+    contentPointTitle: '这一段讨论什么，用简短名称表达',
+    contentPointDetail: '约 20-40 字的一句话概括该段最重要的实际内容，不重复总览',
+    coreViewpoint: '作者明确表达的一条具体看法',
     reason: '一句具体观看建议及原因，必须基于视频内容，不要空泛',
     worthReason: '内容精华或值得关注的信息，0-3 条',
     bestFor: '适合深入了解的人群或需求，0-3 条，允许为空，不要硬凑',
@@ -305,6 +328,9 @@ function pickGuideTranscriptCues(input: {
   readonly metadata: VideoMetadata;
   readonly transcriptCues: readonly SubtitleCue[];
 }): readonly SubtitleCue[] {
+  if (input.transcriptCues.reduce((length, cue) => length + cue.text.length, 0) <= 12_000) {
+    return input.transcriptCues;
+  }
   return applyCharBudget(
     pickRepresentativeCues(input.transcriptCues, input.metadata.duration),
     12_000,

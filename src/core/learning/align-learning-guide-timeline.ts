@@ -1,7 +1,9 @@
 import type {
   LearningGuide,
+  LearningGuideContentPoint,
   LearningGuideDecisionSegment,
   LearningGuideTimePlan,
+  SubtitleCue,
   TimelineNode,
   VideoAnalysis,
   VideoChapter,
@@ -10,12 +12,10 @@ import type {
 export function alignLearningGuideWithTimeline(
   guide: LearningGuide,
   analysis: VideoAnalysis | null,
+  transcriptCues: readonly SubtitleCue[] = [],
 ): LearningGuide {
-  if (!analysis || (analysis.timeline.length === 0 && analysis.chapters.length === 0)) {
-    return guide;
-  }
-  const candidates = createTimelineCandidates(analysis);
-  if (candidates.length === 0) {
+  const candidates = analysis ? createTimelineCandidates(analysis) : [];
+  if (candidates.length === 0 && transcriptCues.length === 0) {
     return guide;
   }
   const alignSegment = (segment: LearningGuideDecisionSegment): LearningGuideDecisionSegment =>
@@ -24,6 +24,13 @@ export function alignLearningGuideWithTimeline(
     ...guide,
     decision: {
       ...guide.decision,
+      ...(guide.decision.contentPoints
+        ? {
+            contentPoints: guide.decision.contentPoints.map((point) =>
+              alignContentPoint(point, candidates, transcriptCues),
+            ),
+          }
+        : {}),
       timePlans: guide.decision.timePlans.map((plan) => alignTimePlan(plan, alignSegment)),
       mustWatch: guide.decision.mustWatch.map(alignSegment),
       canWatch: guide.decision.canWatch.map(alignSegment),
@@ -31,6 +38,105 @@ export function alignLearningGuideWithTimeline(
       canSkip: guide.decision.canSkip.map(alignSegment),
     },
   };
+}
+
+function alignContentPoint(
+  point: LearningGuideContentPoint,
+  timeline: readonly TimelineCandidate[],
+  transcriptCues: readonly SubtitleCue[],
+): LearningGuideContentPoint {
+  // 导航的小节来自字幕锚点；旧速览里的模型秒数只能作为模糊线索。
+  const preciseTimelineTime = findContentPointTimelineTime(point, timeline, 'segment');
+  if (preciseTimelineTime !== undefined) {
+    return { ...point, timestamp: preciseTimelineTime };
+  }
+  // 仅有粗章节时，只修正明显早于章节起点的旧模型时间；章节内部不倒退到章首。
+  const chapterTime = findContentPointTimelineTime(point, timeline, 'chapter');
+  if (
+    point.timestamp !== undefined && chapterTime !== undefined
+    && chapterTime > point.timestamp && chapterTime - point.timestamp <= 90
+  ) {
+    return { ...point, timestamp: chapterTime };
+  }
+  if (point.timestamp !== undefined) return point;
+  const topic = normalizeForLooseMatch(`${point.title}${point.detail}`);
+  const fromTimeline = findUniqueTime(
+    topic,
+    timeline.map((candidate) => ({
+      timestamp: candidate.timestamp,
+      text: `${candidate.title}${candidate.summary}`,
+    })),
+    6,
+  );
+  const fromTranscript = fromTimeline === undefined
+    ? findUniqueTime(
+        topic,
+        transcriptCues.map((cue, index) => ({
+          timestamp: cue.start,
+          text: transcriptCues
+            .slice(index, index + 3)
+            .filter((nearby) => nearby.start - cue.start <= 20)
+            .map((nearby) => nearby.text)
+            .join(''),
+        })),
+        6,
+      )
+    : undefined;
+  const timestamp = fromTimeline ?? fromTranscript;
+  return timestamp === undefined ? point : { ...point, timestamp };
+}
+
+function findContentPointTimelineTime(
+  point: LearningGuideContentPoint,
+  timeline: readonly TimelineCandidate[],
+  source: TimelineCandidate['source'],
+): number | undefined {
+  const title = normalizeForLooseMatch(point.title);
+  if (title.length < 3) return undefined;
+  const detail = normalizeForLooseMatch(point.detail);
+  const ranked = timeline
+    .filter((candidate) => candidate.source === source)
+    .map((candidate) => {
+      const candidateTitle = normalizeForLooseMatch(candidate.title);
+      const candidateSummary = normalizeForLooseMatch(candidate.summary);
+      const titleOverlap = longestCommonSubstringLength(title, candidateTitle);
+      const summaryOverlap = longestCommonSubstringLength(title, candidateSummary);
+      const requiredOverlap = Math.min(4, title.length);
+      if (Math.max(titleOverlap, summaryOverlap) < requiredOverlap) return null;
+      const detailOverlap = longestCommonSubstringLength(detail, candidateSummary);
+      const distance = point.timestamp === undefined ? Infinity : Math.abs(candidate.timestamp - point.timestamp);
+      if (point.timestamp !== undefined && distance > 180) return null;
+      return {
+        timestamp: candidate.timestamp,
+        score: titleOverlap * 3 + summaryOverlap + Math.min(detailOverlap, 8)
+          + (distance <= 90 ? 3 : 0),
+      };
+    })
+    .filter((item): item is { timestamp: number; score: number } => item !== null)
+    .sort((left, right) => right.score - left.score || left.timestamp - right.timestamp);
+  const best = ranked[0];
+  if (!best) return undefined;
+  const competing = ranked.find((candidate) => Math.abs(candidate.timestamp - best.timestamp) > 20);
+  return competing && best.score - competing.score < 2 ? undefined : best.timestamp;
+}
+
+function findUniqueTime(
+  topic: string,
+  candidates: readonly { readonly timestamp: number; readonly text: string }[],
+  minimumScore: number,
+): number | undefined {
+  const ranked = candidates
+    .filter((candidate) => Number.isFinite(candidate.timestamp) && candidate.timestamp >= 0)
+    .map((candidate) => ({
+      timestamp: candidate.timestamp,
+      score: longestCommonSubstringLength(topic, normalizeForLooseMatch(candidate.text)),
+    }))
+    .filter((candidate) => candidate.score >= minimumScore)
+    .sort((left, right) => right.score - left.score || left.timestamp - right.timestamp);
+  const best = ranked[0];
+  if (!best) return undefined;
+  const competing = ranked.find((candidate) => Math.abs(candidate.timestamp - best.timestamp) > 20);
+  return competing && best.score - competing.score < 2 ? undefined : best.timestamp;
 }
 
 interface TimelineCandidate {

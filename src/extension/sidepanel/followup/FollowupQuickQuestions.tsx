@@ -50,8 +50,8 @@ export function FollowupQuickQuestions(props: FollowupQuickQuestionsProps): Reac
       id: 'video-summary',
       label: t('整体讲什么？', 'What is it about?'),
       question: t(
-        '这个视频整体讲了什么内容？请用学习视角概括内容主线、关键概念和核心观点，不要照搬分析页模板，也不要输出观看路线。',
-        'What is this video about overall? From a learning perspective, summarize the main thread, key concepts, and core ideas. Do not judge whether it is worth watching or output a watch route.',
+        '请用清楚、简洁的语言，讲讲这个视频主要说了什么、内容是怎么展开的，以及作者有哪些主要观点。',
+        'In clear, concise language, explain what this video is about, how it unfolds, and the creator’s main points.',
       ),
     },
     {

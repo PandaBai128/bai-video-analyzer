@@ -241,11 +241,11 @@ describe('App 视频分析助手入口', () => {
     expect(screen.getByTestId('non-video-page-guide')).toHaveTextContent(
       '请打开 B 站 / YouTube 视频页',
     );
-    expect(screen.getByText('先快速了解，再按需深入')).toBeDefined();
-    expect(screen.getByText('预览结论、观点和内容精华。')).toBeDefined();
-    expect(screen.getByText('生成时间线，快速跳到重点。')).toBeDefined();
-    expect(screen.getByText('围绕当前片段或全片追问。')).toBeDefined();
-    expect(screen.getByText('保存记录，导出 Markdown。')).toBeDefined();
+    expect(screen.getByText('快速看懂这期视频')).toBeDefined();
+    expect(screen.getByText('看懂内容与观点')).toBeDefined();
+    expect(screen.getByText('按时间找到想看的片段')).toBeDefined();
+    expect(screen.getByText('有疑问，接着聊')).toBeDefined();
+    expect(screen.getByText('留下有用的内容')).toBeDefined();
     expect(screen.queryByTestId('feature-tab-analysis')).toBeNull();
     expect(screen.queryByRole('button', { name: '开启分析' })).toBeNull();
     expect(screen.queryByRole('button', { name: '开始快速分析' })).toBeNull();
@@ -256,15 +256,18 @@ describe('App 视频分析助手入口', () => {
     render(<App />);
 
     await waitFor(() => {
-      expect(screen.getByText('分析结果')).toBeDefined();
+      expect(screen.getByText('内容速览')).toBeDefined();
     });
-    expect(screen.getByText('这个视频讲如何用任务拆解推进项目，核心价值在中段方法。')).toBeDefined();
+    expect(screen.getByTestId('content-overview').textContent).toContain(
+      '这个视频讲如何用任务拆解推进项目，核心价值在中段方法。',
+    );
     expect(screen.queryByText('84')).toBeNull();
     expect(screen.queryByText('只有 10 分钟')).toBeNull();
-    expect(screen.getByText('观看建议')).toBeDefined();
-    expect(screen.getByText('内容精华')).toBeDefined();
-    expect(screen.getAllByText('任务拆解段可以直接复用，片尾寒暄可以跳过。').length).toBeGreaterThan(0);
-    expect(screen.getByText('适合人群与查看方式')).toBeDefined();
+    expect(screen.getByText('概述')).toBeDefined();
+    expect(screen.getByText('主要内容')).toBeDefined();
+    expect(screen.getByText('核心观点')).toBeDefined();
+    expect(screen.getByText('旧版结果缺少分段内容，重新生成后可查看。')).toBeDefined();
+    expect(screen.queryByText('适合人群与查看方式')).toBeNull();
     expect(screen.queryByText(/段落取舍/)).toBeNull();
     expect(screen.queryByTestId('mentor-guide-card')).toBeNull();
 

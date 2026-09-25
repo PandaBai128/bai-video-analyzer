@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "bAI 视频分析助手 - B站/YouTube视频分析、导航与问答",
   "short_name": "bAI 视频分析助手",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "支持哔哩哔哩和 YouTube 的视频分析、导航与问答，快速提炼长视频的结论、观点和内容精华。",
   "minimum_chrome_version": "114",
 

@@ -297,3 +297,14 @@ describe('splitSuggestedQuestions Round 18 必修 3 严格化', () => {
     expect(split.bodyMarkdown).not.toContain('可以继续问：');
   });
 });
+
+describe('追问标题格式兼容', () => {
+  it.each(['**可以继续问：**', '### 可以继续问：', '### **可以继续问：**'])(
+    '提取 %s 下的按钮内容并移除紧邻分隔线',
+    (heading) => {
+      const result = splitSuggestedQuestions('正文。\n\n---\n\n' + heading + '\n- 见面会的具体流程是什么？');
+      expect(result.bodyMarkdown).toBe('正文。');
+      expect(result.suggestions).toEqual(['见面会的具体流程是什么？']);
+    },
+  );
+});

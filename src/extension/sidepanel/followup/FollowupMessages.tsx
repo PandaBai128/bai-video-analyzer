@@ -1,4 +1,4 @@
-import { useMemo, type ReactElement } from 'react';
+import { useMemo, useState, type ReactElement } from 'react';
 import { cn } from '@lib/utils';
 import { MarkdownMessage } from '../MarkdownMessage';
 import { useStreamingDisplay } from '../use-streaming-display';
@@ -122,6 +122,7 @@ interface FollowupMessageBubbleProps {
 function FollowupMessageBubble(props: FollowupMessageBubbleProps): ReactElement {
   const locale = useUiLocale();
   const t = useUiText();
+  const [copyStatus, setCopyStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const {
     message,
     phaseKind,
@@ -161,6 +162,16 @@ function FollowupMessageBubble(props: FollowupMessageBubbleProps): ReactElement 
     return { body: split.bodyMarkdown, suggestions: split.suggestions };
   }, [message.role, message.content, message.error, phaseKind]);
   const suggestions = splitView.suggestions;
+
+  const copyAnswer = async (): Promise<void> => {
+    if (!exchange?.answer) return;
+    try {
+      await navigator.clipboard.writeText(exchange.answer);
+      setCopyStatus('success');
+    } catch {
+      setCopyStatus('error');
+    }
+  };
 
   return (
     <div
@@ -203,24 +214,38 @@ function FollowupMessageBubble(props: FollowupMessageBubbleProps): ReactElement 
       ) : phaseKind === 'streaming' ? (
         <p className="text-muted-foreground">▍</p>
       ) : null}
-      {exchange && onToggleExchangeInReview ? (
-        <div className="mt-3 flex justify-end">
+      {exchange ? (
+        <div className="mt-3 flex justify-end gap-2">
+          {onToggleExchangeInReview ? (
+            <button
+              type="button"
+              disabled={exchangeIncludeDisabled}
+              className={cn(
+                'rounded-md border px-2 py-1 text-xs font-medium disabled:opacity-50',
+                exchangeIncluded
+                  ? 'border-primary bg-accent text-primary'
+                  : 'border-border bg-background hover:bg-accent',
+              )}
+              onClick={() => onToggleExchangeInReview(exchange, !exchangeIncluded)}
+            >
+              {exchangeIncluded
+                ? t('移出笔记', 'Remove from Notes')
+                : exchangeIncludeDisabled
+                  ? t('最多 8 条', 'Up to 8')
+                  : t('加入笔记', 'Add to Notes')}
+            </button>
+          ) : null}
           <button
             type="button"
-            disabled={exchangeIncludeDisabled}
-            className={cn(
-              'rounded-md border px-2 py-1 text-xs font-medium disabled:opacity-50',
-              exchangeIncluded
-                ? 'border-primary bg-accent text-primary'
-                : 'border-border bg-background hover:bg-accent',
-            )}
-            onClick={() => onToggleExchangeInReview(exchange, !exchangeIncluded)}
+            className="rounded-md border border-border bg-background px-2 py-1 text-xs font-medium hover:bg-accent"
+            onClick={() => void copyAnswer()}
+            aria-live="polite"
           >
-            {exchangeIncluded
-              ? t('移出笔记', 'Remove from Notes')
-              : exchangeIncludeDisabled
-                ? t('最多 8 条', 'Up to 8')
-                : t('加入笔记', 'Add to Notes')}
+            {copyStatus === 'success'
+              ? t('已复制', 'Copied')
+              : copyStatus === 'error'
+                ? t('复制失败，请重试', 'Copy failed, retry')
+                : t('复制文字', 'Copy Text')}
           </button>
         </div>
       ) : null}
@@ -256,9 +281,9 @@ function formatAnswerBasisLabel(
   basis: FollowupAnswerBasis,
   t: (zh: string, en: string) => string,
 ): string {
-  if (basis === 'video_plus_general') return t('通识', 'General');
+  if (basis === 'video_plus_general') return t('结合视频与通识回答', 'Video and general knowledge');
   if (basis === 'video_plus_web') return t('联网', 'Web');
-  return t('仅视频', 'Video');
+  return t('仅根据视频回答', 'Based on video only');
 }
 
 function buildCompletedExchange(

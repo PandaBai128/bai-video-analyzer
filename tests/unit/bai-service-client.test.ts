@@ -5,10 +5,10 @@ import {
   stripThinkSections,
 } from '@core/llm/bai-service-client';
 import { LanguageModelApiError } from '@core/llm/language-model-client';
-import { DEFAULT_BAI_SERVICE_URL, type BaiServiceSettings } from '@shared/settings';
+import type { BaiServiceSettings } from '@shared/settings';
 
 const SETTINGS: BaiServiceSettings = {
-  serviceUrl: 'http://io2477kl7316.vicp.fun/',
+  serviceUrl: 'https://video-analysis.pandabai.com/',
   inviteCode: 'bai-demo',
   accessToken: '',
   model: 'bai-service',
@@ -66,8 +66,8 @@ describe('BaiServiceClient', () => {
     });
 
     expect(requests.map((request) => request.url)).toEqual([
-      `${DEFAULT_BAI_SERVICE_URL}/auth/invite`,
-      `${DEFAULT_BAI_SERVICE_URL}/chat`,
+      'https://video-analysis.pandabai.com/auth/invite',
+      'https://video-analysis.pandabai.com/chat',
     ]);
     expect(requestBody(0)).toEqual({ code: 'bai-demo' });
     expect(requests[1]?.init.headers).toMatchObject({
@@ -120,8 +120,8 @@ describe('BaiServiceClient', () => {
     const quota = await client.getQuota();
 
     expect(requests.map((request) => request.url)).toEqual([
-      `${DEFAULT_BAI_SERVICE_URL}/auth/invite`,
-      `${DEFAULT_BAI_SERVICE_URL}/me/quota`,
+      'https://video-analysis.pandabai.com/auth/invite',
+      'https://video-analysis.pandabai.com/me/quota',
     ]);
     expect(requests[1]?.init.headers).toMatchObject({
       Authorization: 'Bearer issued-token',
@@ -143,7 +143,7 @@ describe('BaiServiceClient', () => {
     }
 
     expect(message).toBe('bAI 服务邀请码验证失败：network down。');
-    expect(message).not.toContain('io2477kl7316.vicp.fun');
+    expect(message).not.toContain('video-analysis.pandabai.com');
     expect(message).not.toContain('当前服务地址');
   });
 
@@ -170,7 +170,7 @@ describe('BaiServiceClient', () => {
     }
 
     expect(message).toBe('bAI 免费服务请求失败：socket closed。');
-    expect(message).not.toContain('io2477kl7316.vicp.fun');
+    expect(message).not.toContain('video-analysis.pandabai.com');
     expect(message).not.toContain('当前服务地址');
   });
 
@@ -195,7 +195,7 @@ describe('BaiServiceClient', () => {
     await client.chat([{ role: 'user', content: 'hi' }]);
 
     expect(requests).toHaveLength(1);
-    expect(requests[0]?.url).toBe(`${DEFAULT_BAI_SERVICE_URL}/chat`);
+    expect(requests[0]?.url).toBe('https://video-analysis.pandabai.com/chat');
     expect(requests[0]?.init.headers).toMatchObject({
       Authorization: 'Bearer stored-token',
     });
@@ -254,7 +254,7 @@ describe('BaiServiceClient', () => {
       chunks.push(chunk);
     }
 
-    expect(requests[1]?.url).toBe(`${DEFAULT_BAI_SERVICE_URL}/chat`);
+    expect(requests[1]?.url).toBe('https://video-analysis.pandabai.com/chat');
     expect(requestBody(1)).toMatchObject({ stream: true });
     expect(chunks).toEqual([
       { text: '你', done: false },

@@ -24,7 +24,7 @@
  */
 
 const SUGGESTED_HEADING_PATTERN =
-  /(?:\*{0,2}\s*(?:🧭\s*)?(?:你\s*)?可以继续问|🧭\s*可以继续问|\*{0,2}\s*继续追问|追问建议|后续问题|you can ask next|follow[- ]?up questions?|next questions?)\s*\*{0,2}\s*[:：]?\s*\n+/iu;
+  /^[ \t]*(?:#{1,6}[ \t]+)?(?:\*{1,2}[ \t]*)?(?:🧭[ \t]*)?(?:你[ \t]*)?(?:可以继续问|继续追问|追问建议|后续问题|you can ask next|follow[- ]?up questions?|next questions?)[ \t]*[:：]?[ \t]*\*{0,2}[ \t]*[:：]?[ \t]*\r?\n+/imu;
 
 /**
  * Round 18 必修 3 关键：**必须**有 bullet 或编号才算列表项。
@@ -281,5 +281,5 @@ function dedupeKey(text: string): string {
 }
 
 function stripTrailingBlankLines(text: string): string {
-  return text.replace(/[\r\n]+$/u, '');
+  return text.replace(/(?:^|\n)[ \t]*(?:-{3,}|\*{3,}|_{3,})[ \t]*\s*$/u, '').trimEnd();
 }

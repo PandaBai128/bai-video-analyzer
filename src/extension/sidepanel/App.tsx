@@ -87,9 +87,7 @@ export function App(): JSX.Element {
   useEffect(() => {
     document.title = t('bAI 视频分析助手', 'bAI Video Analysis Assistant');
   }, [t]);
-  const [status, setStatus] = useState(() =>
-    t('正在读取当前页面...', 'Reading current page...'),
-  );
+  const [status, setStatus] = useState(() => t('正在读取当前页面...', 'Reading current page...'));
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<{
     metadata: VideoMetadata;
@@ -153,16 +151,13 @@ export function App(): JSX.Element {
     },
     [],
   );
-  const rememberCurrentTabScroll = useCallback(
-    (tab: AnalysisTab): void => {
-      if (tab === 'followup') return;
-      const element = tabScrollNodesRef.current[tab];
-      if (element) {
-        setTabScrollPosition(tabScrollPositionsRef.current, tab, element.scrollTop);
-      }
-    },
-    [],
-  );
+  const rememberCurrentTabScroll = useCallback((tab: AnalysisTab): void => {
+    if (tab === 'followup') return;
+    const element = tabScrollNodesRef.current[tab];
+    if (element) {
+      setTabScrollPosition(tabScrollPositionsRef.current, tab, element.scrollTop);
+    }
+  }, []);
 
   // 页面切换后重置选中时间点 / 导出目录 / tab / 展开章节（hook 在 setContext 之后调）。
   const handlePageReset = useCallback((): void => {
@@ -619,6 +614,7 @@ export function App(): JSX.Element {
                   {analysisTab === 'analysis' ? (
                     <AnalysisTabView
                       session={localizedLearningSession}
+                      analysis={localizedAnalysisResult?.analysis ?? null}
                       hasContentContext={hasLearningContext}
                       isPreparing={isAnalyzing}
                       isMutating={isLearningMutating}
@@ -629,6 +625,8 @@ export function App(): JSX.Element {
                       onScroll={(event) => handleTabScroll('analysis', event)}
                       onStartAnalysis={startAnalysis}
                       onCancelGenerateGuide={cancelLearningGuideGeneration}
+                      onSeek={(timestamp) => void seekAndSelect(timestamp)}
+                      duration={contentContext?.metadata.duration}
                     />
                   ) : analysisTab === 'navigation' ? (
                     <div
@@ -648,7 +646,7 @@ export function App(): JSX.Element {
                         >
                           {isAnalyzing
                             ? t('生成中...', 'Generating...')
-                            : t('生成导航', 'Generate Navigation')}
+                            : t('生成详细时间线', 'Generate Detailed Timeline')}
                         </button>
                       ) : null}
                       {isTimelineStreaming ? (
@@ -720,43 +718,43 @@ export function App(): JSX.Element {
                     />
                   ) : null}
 
-                {(() => {
-                  const visibility = pickFollowupTabVisibility({
-                    hasVisitedFollowup,
-                    analysisTab,
-                  });
-                  if (!visibility.shouldRender) {
-                    return null;
-                  }
-                  return (
-                    <div
-                      className={cn('h-full min-h-0', visibility.shouldHide && 'hidden')}
-                      data-tab="followup"
-                      data-testid="followup-tab-wrapper"
-                    >
-                      <FollowupTab
-                        hasContentContext={hasFollowupContext}
-                        analysisMode={analysisMode}
-                        playbackState={playbackState}
-                        onPrepareContentContext={() => void prepareContentContext()}
-                        isAnalyzing={isAnalyzing}
-                        contextKey={followupContextKey}
-                        webSearchAvailable={
-                          (textProviderSettings?.activeTextProvider ?? 'minimax') === 'minimax' &&
-                          textProviderSettings?.webSearchEnabled === true &&
-                          textProviderSettings.hasApiKey === true
-                        }
-                        onSeekTimestamp={(seconds) => void seekAndSelect(seconds)}
-                        selectedTimestamp={selectedTimestamp}
-                        savedExchanges={localizedLearningSession?.exchanges ?? []}
-                        onToggleExchangeInReview={(exchange, included) =>
-                          void toggleLearningExchangeInReview(exchange, included)
-                        }
-                        {...(pendingFollowupDraft ? { initialDraft: pendingFollowupDraft } : {})}
-                      />
-                    </div>
-                  );
-                })()}
+                  {(() => {
+                    const visibility = pickFollowupTabVisibility({
+                      hasVisitedFollowup,
+                      analysisTab,
+                    });
+                    if (!visibility.shouldRender) {
+                      return null;
+                    }
+                    return (
+                      <div
+                        className={cn('h-full min-h-0', visibility.shouldHide && 'hidden')}
+                        data-tab="followup"
+                        data-testid="followup-tab-wrapper"
+                      >
+                        <FollowupTab
+                          hasContentContext={hasFollowupContext}
+                          analysisMode={analysisMode}
+                          playbackState={playbackState}
+                          onPrepareContentContext={() => void prepareContentContext()}
+                          isAnalyzing={isAnalyzing}
+                          contextKey={followupContextKey}
+                          webSearchAvailable={
+                            (textProviderSettings?.activeTextProvider ?? 'minimax') === 'minimax' &&
+                            textProviderSettings?.webSearchEnabled === true &&
+                            textProviderSettings.hasApiKey === true
+                          }
+                          onSeekTimestamp={(seconds) => void seekAndSelect(seconds)}
+                          selectedTimestamp={selectedTimestamp}
+                          savedExchanges={localizedLearningSession?.exchanges ?? []}
+                          onToggleExchangeInReview={(exchange, included) =>
+                            void toggleLearningExchangeInReview(exchange, included)
+                          }
+                          {...(pendingFollowupDraft ? { initialDraft: pendingFollowupDraft } : {})}
+                        />
+                      </div>
+                    );
+                  })()}
                 </div>
                 <div className="shrink-0 pt-2">
                   <FeatureTabs activeTab={analysisTab} onSelectTab={handleSelectTab} />

@@ -499,6 +499,7 @@ function isReadableLearningGuide(value: unknown): value is LearningGuide {
     isStringArray(decision.bestFor) &&
     isStringArray(decision.notFor) &&
     isOptionalStringArray(decision.learningValue) &&
+    isOptionalStringArray(decision.coreViewpoints) &&
     Array.isArray(decision.timePlans) &&
     Array.isArray(decision.mustWatch) &&
     Array.isArray(decision.canWatch) &&

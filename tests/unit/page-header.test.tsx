@@ -30,17 +30,19 @@ interface Harness {
   unmount: () => void;
 }
 
-function renderHeader(options: {
-  context?: PageContext | null;
-  status?: string;
-  contentContext?: ContentContextCacheValue | null;
-  learningSession?: PageHeaderProps['learningSession'];
-  analysisResult?: PageHeaderProps['analysisResult'];
-  activeTab?: 'analysis' | 'navigation' | 'followup' | 'notes';
-  textModelAccessMode?: PageHeaderProps['textModelAccessMode'];
-  onRegenerateAnalysis?: () => void;
-  onRegenerateNavigation?: () => void;
-} = {}): Harness {
+function renderHeader(
+  options: {
+    context?: PageContext | null;
+    status?: string;
+    contentContext?: ContentContextCacheValue | null;
+    learningSession?: PageHeaderProps['learningSession'];
+    analysisResult?: PageHeaderProps['analysisResult'];
+    activeTab?: 'analysis' | 'navigation' | 'followup' | 'notes';
+    textModelAccessMode?: PageHeaderProps['textModelAccessMode'];
+    onRegenerateAnalysis?: () => void;
+    onRegenerateNavigation?: () => void;
+  } = {},
+): Harness {
   const onRefreshPageContext = vi.fn().mockResolvedValue(undefined);
   const rendered = render(
     <PageHeader
@@ -314,7 +316,7 @@ describe('PageHeader (SG-03C: 页面壳层 header)', () => {
     renderHeader({ context: SAMPLE_CONTEXT });
     fireEvent.click(screen.getByLabelText('更多操作'));
     fireEvent.click(screen.getByText('设置'));
-    expect((chrome.runtime.openOptionsPage as ReturnType<typeof vi.fn>)).toHaveBeenCalledTimes(1);
+    expect(chrome.runtime.openOptionsPage as ReturnType<typeof vi.fn>).toHaveBeenCalledTimes(1);
   });
 
   it('当前页面的重新生成动作收进更多菜单', () => {
@@ -464,8 +466,14 @@ describe('FeatureTabs (SG-03C: 四入口受控切换)', () => {
     expect(within(tabsRoot).getByTestId('feature-tab-followup')).toBeDefined();
     expect(within(tabsRoot).getByTestId('feature-tab-notes')).toBeDefined();
     // notes 高亮
-    expect(within(tabsRoot).getByTestId('feature-tab-notes')).toHaveAttribute('aria-selected', 'true');
-    expect(within(tabsRoot).getByTestId('feature-tab-navigation')).toHaveAttribute('aria-selected', 'false');
+    expect(within(tabsRoot).getByTestId('feature-tab-notes')).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
+    expect(within(tabsRoot).getByTestId('feature-tab-navigation')).toHaveAttribute(
+      'aria-selected',
+      'false',
+    );
 
     fireEvent.click(within(tabsRoot).getByTestId('feature-tab-followup'));
     expect(h.onSelectTab).toHaveBeenCalledWith('followup');
@@ -485,9 +493,7 @@ describe('FeatureTabs (SG-03C: 四入口受控切换)', () => {
   });
 
   it('不同 active tab 的滑块位移按单格宽度加 gap 对齐', () => {
-    const { rerender } = render(
-      <FeatureTabs activeTab="analysis" onSelectTab={vi.fn()} />,
-    );
+    const { rerender } = render(<FeatureTabs activeTab="analysis" onSelectTab={vi.fn()} />);
     const tabsRoot = screen.getByTestId('feature-tabs');
     const slider = tabsRoot.querySelector('[aria-hidden="true"]') as HTMLElement;
     expect(slider.style.transform).toBe('translateX(calc(0% + 0px))');
@@ -502,9 +508,9 @@ describe('FeatureTabs (SG-03C: 四入口受控切换)', () => {
     expect(slider.style.transform).toBe('translateX(calc(300% + 12px))');
   });
 
-  it('tab 文本标签 = 分析 / 导航 / 提问 / 笔记', () => {
+  it('tab 文本标签 = 速览 / 导航 / 提问 / 笔记', () => {
     renderTabs();
-    expect(screen.getByRole('tab', { name: '分析' })).toBeDefined();
+    expect(screen.getByRole('tab', { name: '内容速览' })).toBeDefined();
     expect(screen.getByRole('tab', { name: '导航' })).toBeDefined();
     expect(screen.getByRole('tab', { name: '提问' })).toBeDefined();
     expect(screen.getByRole('tab', { name: '笔记' })).toBeDefined();

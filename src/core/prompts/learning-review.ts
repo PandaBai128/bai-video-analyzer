@@ -3,7 +3,13 @@ import {
   pickCuesNearest,
   pickRepresentativeCues,
 } from '@core/followup/transcript-sampling';
-import type { LearningGuide, LearningSession, SubtitleCue, VideoAnalysis, VideoMetadata } from '@core/types';
+import type {
+  LearningGuide,
+  LearningSession,
+  SubtitleCue,
+  VideoAnalysis,
+  VideoMetadata,
+} from '@core/types';
 import { DEFAULT_UI_LOCALE, type UiLocale } from '@shared/locale-settings';
 
 const MODE_LABELS: Record<LearningSession['goal']['mode'], string> = {
@@ -62,8 +68,13 @@ export function buildLearningReviewPrompt(input: {
         `观看建议：${guide.suggestedStance}`,
         `笔记角度：${formatGoal(input.session)}`,
         `内容概括：${guide.decision.overallMeaning || guide.decision.verdict}`,
+        ...(guide.decision.contentPoints?.length
+          ? [
+              `主要内容：${guide.decision.contentPoints.map((point) => `${point.title}：${point.detail}`).join('；')}`,
+            ]
+          : []),
         `内容精华：${guide.decision.worthReasons?.join('；') || '无'}`,
-        `核心观点：${guide.decision.learningValue?.join('；') || '无'}`,
+        `核心观点：${(guide.decision.coreViewpoints?.length ? guide.decision.coreViewpoints : guide.decision.learningValue)?.join('；') || '无'}`,
         guide.decision.reservations.length
           ? `信息边界：${guide.decision.reservations.join('；')}`
           : '信息边界：无',

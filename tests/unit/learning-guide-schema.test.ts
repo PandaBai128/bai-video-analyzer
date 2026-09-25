@@ -16,6 +16,80 @@ function tutorialValueProfile() {
 }
 
 describe('parseLearningGuideJson', () => {
+  it('优先把字幕编号映射到真实时间，避免模型把 11:30 写成 11:00', () => {
+    const guide = parseLearningGuideJson({
+      content: JSON.stringify({
+        decision: {
+          valueProfile: tutorialValueProfile(),
+          contentPoints: [
+            { title: '大床演示', detail: '展示具体操作。', startCueId: 2, timestamp: 660 },
+            { title: '没有可用编号', detail: '保留旧格式时间。', startCueId: 99, timestamp: 700 },
+          ],
+        },
+      }),
+      transcriptCues: [
+        { start: 0, text: '开场' },
+        { start: 660, text: '卧室介绍' },
+        { start: 690, text: '现在演示大床' },
+      ],
+      generatedAt: 1,
+      modelUsed: 'model',
+    });
+    expect(guide.decision.contentPoints?.map((point) => point.timestamp)).toEqual([690, 700]);
+  });
+
+  it('保留有内容的速览要点和可跳转时间，忽略缺失依据的条目', () => {
+    const guide = parseLearningGuideJson({
+      content: JSON.stringify({
+        decision: {
+          valueProfile: tutorialValueProfile(),
+          overallMeaning: '先说明问题，再用两个例子解释取舍。',
+          contentPoints: [
+            { title: '第一个例子', detail: '作者用实际场景说明取舍。', timestamp: 82 },
+            { title: '只有标题' },
+            { title: '时间无效', detail: '保留文字，但不提供跳转。', timestamp: -1 },
+          ],
+          quickJumps: [
+            { timestamp: 82, title: '实际演示', reason: '这里能看到完整过程。' },
+            { timestamp: -1, title: '无效时间', reason: '不能跳转。' },
+          ],
+        },
+      }),
+      generatedAt: 1,
+      modelUsed: 'model',
+    });
+
+    expect(guide.decision.contentPoints).toEqual([
+      { title: '第一个例子', detail: '作者用实际场景说明取舍。', timestamp: 82 },
+      { title: '时间无效', detail: '保留文字，但不提供跳转。' },
+    ]);
+    expect(guide.decision.quickJumps).toEqual([
+      { timestamp: 82, title: '实际演示', reason: '这里能看到完整过程。' },
+    ]);
+  });
+
+  it('保留每段有字幕依据的时间点和独立核心观点', () => {
+    const guide = parseLearningGuideJson({
+      content: JSON.stringify({
+        decision: {
+          valueProfile: tutorialValueProfile(),
+          contentPoints: [
+            { title: '一', detail: '第一点', timestamp: 10 },
+            { title: '二', detail: '第二点', timestamp: 20 },
+            { title: '三', detail: '第三点', timestamp: 30 },
+            { title: '四', detail: '第四点', timestamp: 40 },
+          ],
+          coreViewpoints: ['作者更重视使用成本', '结论依赖具体场景'],
+        },
+      }),
+      generatedAt: 1,
+      modelUsed: 'model',
+    });
+
+    expect(guide.decision.contentPoints?.map((point) => point.timestamp)).toEqual([10, 20, 30, 40]);
+    expect(guide.decision.coreViewpoints).toEqual(['作者更重视使用成本', '结论依赖具体场景']);
+  });
+
   it('英文输出缺字段时 fallback 不混入中文默认文案', () => {
     const guide = parseLearningGuideJson({
       content: JSON.stringify({
@@ -44,13 +118,9 @@ describe('parseLearningGuideJson', () => {
     });
 
     expect(guide.contentType).toBe('Video content');
-    expect(guide.contentTypeReason).toBe(
-      'The model did not provide a content-type reason.',
-    );
+    expect(guide.contentTypeReason).toBe('The model did not provide a content-type reason.');
     expect(guide.decision.reason).toBe('The model did not provide a clear reason.');
-    expect(guide.decision.verdict).toBe(
-      'Quick browse: The model did not provide a clear reason.',
-    );
+    expect(guide.decision.verdict).toBe('Quick browse: The model did not provide a clear reason.');
     expect(guide.decision.timePlans[0]).toMatchObject({
       label: 'Only 10 minutes',
       instruction: 'Use the segments above to decide what to watch.',

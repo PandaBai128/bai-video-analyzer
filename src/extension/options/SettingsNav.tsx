@@ -10,6 +10,11 @@ export function SettingsNav(props: { readonly t: Translate }): JSX.Element {
       <div className="space-y-1">
         {[
           {
+            href: '#updates',
+            label: t('更新插件版本', 'Extension updates'),
+            hint: t('检查更新 / 下载', 'Check / download'),
+          },
+          {
             href: '#appearance',
             label: t('外观', 'Appearance'),
             hint: t('语言 / 字号 / 风格', 'Language / font / style'),
