@@ -1,0 +1,37 @@
+/* The hero is a luminous video canvas, with the product controls on a raised panel. */
+.hero-art { padding-top: 40px; isolation: isolate; }
+.hero-art::before { content: ''; position: absolute; inset: -8% -12%; z-index: -2; background: radial-gradient(ellipse at 55% 40%, #bce5ab80, transparent 64%); filter: blur(25px); }
+.hero-art::after { content: ''; position: absolute; inset: 60px 0 8px 22px; border: 1px solid #a8c29c; border-radius: 24px; background: #dce9d5; transform: rotate(4deg); z-index: -1; }
+.demo-shell { border-radius: 22px; box-shadow: 0 36px 70px -30px #22453270, 0 1px 0 #fff inset; transform: rotate(-3deg); }
+.demo-toolbar { padding-block: 16px; }
+.demo-video { height: 225px; margin: 0; border-radius: 0; background: radial-gradient(ellipse at 80% 45%, #3e704e, transparent 65%), #142e25; }
+.demo-video::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(#b6df9d10 1px, transparent 1px), linear-gradient(90deg,#b6df9d10 1px,transparent 1px); background-size: 26px 26px; mask-image: linear-gradient(to right, transparent, black); }
+.demo-video::after { content: ''; position: absolute; width: 100%; height: 1px; top: 0; background: #d5f8b2; box-shadow: 0 0 24px 8px #c2ff9840; animation: scan-once 2.8s ease-out 1 both; pointer-events: none; }
+.video-caption { padding: 26px; }
+.video-caption > span:first-child { color: #bdd9a5; font-size: 9px; letter-spacing: .15em; }
+.video-caption h2 { color: #f1f8df; font-size: 30px; letter-spacing: -.04em; text-shadow: 0 2px 18px #10281c; }
+.video-duration { color: #a7c6a5; }
+.demo-label { color: #bbd5af; z-index: 3; }
+.signal-sphere { position: absolute; width: 180px; height: 180px; right: 14px; top: 12px; perspective: 600px; }
+.sphere-core { position: absolute; inset: 42px; display: grid; place-items: center; border-radius: 50%; color: #e2ffbb; font-size: 28px; background: radial-gradient(circle at 30% 22%, #aed98390, #456d4440 50%, #173728); border: 1px solid #b8e79799; box-shadow: inset 0 0 25px #c5fa9470, 0 0 45px #adff6930; }
+.signal-sphere > i { position: absolute; inset: 8px; border: 1px solid #c6ef9770; border-radius: 50%; transform: rotate(-30deg) rotateX(55deg); box-shadow: 0 0 10px #c9ef8b15; }
+.signal-sphere > i:nth-of-type(2) { transform: rotate(40deg) rotateY(58deg); inset: 0; }
+.signal-sphere > i:nth-of-type(3) { transform: rotate(-35deg) rotateY(55deg); inset: 18px; border-style: dashed; }
+.signal-node { position: absolute; width: 7px; height: 7px; border-radius: 50%; background: #dbffb0; box-shadow: 0 0 16px 5px #b7f78a55; }
+.node-a { left: 23px; top: 58px; } .node-b { right: 20px; bottom: 39px; }
+.signal-wave { display: flex; align-items: center; gap: 3px; position: absolute; bottom: 20px; right: 26px; height: 22px; opacity: .6; }
+.signal-wave i { width: 3px; height: calc(5px + mod(var(--bar) * 7, 19) * 1px); background: #bce58d; border-radius: 3px; }
+.demo-assistant { position: relative; margin: -4px 10px 10px; padding-top: 23px; border-radius: 16px; background: #fff; box-shadow: 0 -5px 25px #132d2512; }
+.demo-tabs { background: #edf3e9; }
+.demo-tabs button[aria-selected="true"] { background: #294c39; color: #efffde; box-shadow: 0 3px 8px #25492d24; }
+.demo-panels { min-height: 144px; }
+.demo-tags span { border: 1px solid #d7e5cc; background: #f4f8f0; }
+.floating-note { backdrop-filter: blur(14px); background: #ffffffeb; box-shadow: 0 14px 35px #254c3020; border-color: #c9dcbc; }
+.note-top { right: -20px; top: 8px; transform: rotate(5deg); }
+.note-bottom { left: -28px; bottom: -12px; transform: rotate(-5deg); }
+.art-orbit { border-color: #b3ce9d80; }
+@keyframes scan-once { from { top: 0; opacity: 0; } 20% { opacity: .8; } to { top: 100%; opacity: 0; } }
+@media (max-width: 1050px) { .signal-sphere { right: -18px; opacity: .8; transform: scale(.85); } .video-caption h2 { font-size: 27px; } }
+@media (max-width: 800px) { .hero-art { padding-top: 20px; } .demo-video { height: 215px; } .signal-sphere { right: 0; } .note-top { right: -5px; top: -8px; } .note-bottom { left: -5px; } .demo-assistant { padding-inline: 14px; } }
+@media (max-width: 400px) { .signal-sphere { right: -38px; transform: scale(.7); } .signal-wave { right: 12px; } }
+@media (prefers-reduced-motion: reduce) { .demo-video::after { animation: none; opacity: 0; } }
