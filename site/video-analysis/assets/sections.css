@@ -77,9 +77,9 @@
   background: #e0f1eb;
   transform: translate(calc(var(--depth, 0) * 14px), calc(var(--depth, 0) * 9px)) rotate(calc(var(--depth, 0) * 1.5deg)) scale(calc(1 - var(--depth, 0) * 0.035));
   transform-origin: right bottom;
-  transition: opacity 250ms ease;
+  will-change: transform;
   box-shadow: 0 8px 22px #43563418;
-  opacity: 0.65;
+  opacity: 1;
 }
 .story-frame[data-frame="0"] { z-index: 3; --depth: 0; }
 .story-frame[data-frame="1"] { z-index: 2; --depth: 1; }

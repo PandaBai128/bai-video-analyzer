@@ -60,29 +60,63 @@
   const count = document.querySelector('.preview-count');
   const fullShot = document.querySelector('.full-shot');
   let activeFrame = 0;
+  let requestedFrame = 0;
+  let turning = false;
   let storyScroll;
-  function showFrame(index) {
-    if (index === activeFrame) return;
-    activeFrame = index;
+  const pose = (depth) => ({ x: depth * 14, y: depth * 9, rotation: depth * 1.5, scale: 1 - depth * 0.035 });
+  function markFrame(index) {
     frames.forEach((frame, i) => {
       frame.classList.toggle('is-active', i === index);
-      const depth = (i - index + frames.length) % frames.length;
-      frame.style.setProperty('--depth', String(depth));
-      frame.style.zIndex = String(frames.length - depth);
       frame.setAttribute('aria-hidden', String(i !== index));
       steps[i].classList.toggle('is-active', i === index);
     });
-    if (gsap && !reduceMotion.matches) {
-      gsap.killTweensOf(frames);
-      gsap.set(frames, { clearProps: 'opacity' });
-      gsap.fromTo(frames[index], { opacity: 0 }, { opacity: 1, duration: 0.4, clearProps: 'opacity' });
-    }
     count.textContent = `0${index + 1} / 03`;
     fullShot.href = frames[index].querySelector('img').getAttribute('src');
-
   }
-
-
+  function showFrame(index) {
+    requestedFrame = index;
+    if (turning || index === activeFrame) return;
+    const previous = activeFrame;
+    const incoming = frames[index];
+    if (!gsap || reduceMotion.matches) {
+      frames.forEach((frame, i) => {
+        const depth = (i - index + frames.length) % frames.length;
+        frame.style.setProperty('--depth', String(depth));
+        frame.style.zIndex = String(frames.length - depth);
+        if (gsap) gsap.set(frame, pose(depth));
+      });
+      activeFrame = index;
+      markFrame(index);
+      return;
+    }
+    turning = true;
+    frames.forEach((frame, i) => {
+      const depth = (i - previous + frames.length) % frames.length;
+      gsap.set(frame, { ...pose(depth), zIndex: frames.length - depth });
+    });
+    // 先抽出再换层级，完整保留卡片的运动轨迹。
+    const direction = index > previous ? 1 : -1;
+    const distance = incoming.getBoundingClientRect().width * 0.32;
+    const turn = gsap.timeline({
+      onComplete: () => {
+        activeFrame = index;
+        turning = false;
+        if (requestedFrame !== activeFrame) showFrame(requestedFrame);
+      },
+    });
+    turn.to(incoming, { x: direction * distance, y: -18, rotation: direction * 7, scale: 0.98, duration: 0.28, ease: 'power2.inOut' });
+    turn.call(() => {
+      frames.forEach((frame, i) => {
+        const depth = (i - index + frames.length) % frames.length;
+        frame.style.zIndex = String(frames.length - depth);
+      });
+      markFrame(index);
+    });
+    frames.forEach((frame, i) => {
+      const depth = (i - index + frames.length) % frames.length;
+      turn.to(frame, { ...pose(depth), duration: 0.38, ease: 'power2.out' }, 0.28);
+    });
+  }
 
   const dialog = document.querySelector('#screenshot-dialog');
   const dialogImage = dialog.querySelector('img');
