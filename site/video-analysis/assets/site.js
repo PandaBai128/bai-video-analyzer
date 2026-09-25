@@ -60,6 +60,7 @@
   const count = document.querySelector('.preview-count');
   const fullShot = document.querySelector('.full-shot');
   let activeFrame = 0;
+  let storyScroll;
   function showFrame(index) {
     if (index === activeFrame) return;
     activeFrame = index;
@@ -71,15 +72,41 @@
       frame.setAttribute('aria-hidden', String(i !== index));
       steps[i].classList.toggle('is-active', i === index);
     });
+    if (gsap && !reduceMotion.matches) {
+      gsap.killTweensOf(frames);
+      gsap.set(frames, { clearProps: 'opacity' });
+      gsap.fromTo(frames[index], { opacity: 0 }, { opacity: 1, duration: 0.4, clearProps: 'opacity' });
+    }
     count.textContent = `0${index + 1} / 03`;
     fullShot.href = frames[index].querySelector('img').getAttribute('src');
 
   }
 
 
-  steps.forEach((step, index) => {
-    step.addEventListener('pointerenter', () => showFrame(index));
-    step.addEventListener('focusin', () => showFrame(index));
+
+  const dialog = document.querySelector('#screenshot-dialog');
+  const dialogImage = dialog.querySelector('img');
+  document.querySelectorAll('.full-shot, .mobile-shot').forEach((link) => {
+    link.addEventListener('click', (event) => {
+      event.preventDefault();
+      dialogImage.src = link.href;
+      dialog.showModal();
+    });
+  });
+  dialog.querySelector('button').addEventListener('click', () => dialog.close());
+  dialog.addEventListener('click', (event) => {
+    if (event.target === dialog || event.target.classList.contains('shot-backdrop')) dialog.close();
+  });
+  document.querySelectorAll('[data-show-frame]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const index = Number(button.dataset.showFrame);
+      if (storyScroll) {
+        window.scrollTo({ top: storyScroll.start + (index + 0.5) * (storyScroll.end - storyScroll.start) / 3, behavior: 'instant' });
+      } else {
+        steps[index].querySelector('.mobile-shot').scrollIntoView({ block: 'center', behavior: 'smooth' });
+      }
+      showFrame(index);
+    });
   });
 
   if (!gsap || !ScrollTrigger) return;
@@ -135,18 +162,15 @@
   });
 
   media.add('(min-width: 801px)', () => {
-    steps.forEach((step, index) => {
-      ScrollTrigger.create({
-        trigger: step,
-        start: 'top 55%',
-        end: 'bottom 55%',
-        onEnter: () => showFrame(index),
-        onEnterBack: () => showFrame(index),
-      });
+    storyScroll = ScrollTrigger.create({
+      trigger: '.experience',
+      start: 'top 100px',
+      end: '+=1050',
+      pin: true,
+      onUpdate: (self) => showFrame(Math.min(2, Math.floor(self.progress * 3))),
+      onLeaveBack: () => showFrame(0),
     });
-    return () => {
-      if (gsap) gsap.set(frames, { clearProps: 'opacity,visibility,transform' });
-    };
+    return () => { storyScroll = null; };
   });
 
   media.add('(min-width: 801px) and (prefers-reduced-motion: no-preference)', () => {

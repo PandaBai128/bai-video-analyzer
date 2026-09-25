@@ -10,12 +10,12 @@
     />
     <title>bAI 视频分析助手｜长视频，也能轻松看</title>
     <link rel="icon" type="image/png" href="/assets/icon-128.png" />
-    <link rel="stylesheet" href="/styles.css?v=20260926-2" />
-    <link rel="stylesheet" href="/assets/sections.css?v=20260926-2" />
-    <link rel="stylesheet" href="/assets/responsive.css?v=20260926-2" />
+    <link rel="stylesheet" href="/styles.css?v=20260926-3" />
+    <link rel="stylesheet" href="/assets/sections.css?v=20260926-3" />
+    <link rel="stylesheet" href="/assets/responsive.css?v=20260926-3" />
     <script defer src="/assets/vendor/gsap.min.js"></script>
     <script defer src="/assets/vendor/ScrollTrigger.min.js"></script>
-    <script defer src="/assets/site.js?v=20260926-2"></script>
+    <script defer src="/assets/site.js?v=20260926-3"></script>
   </head>
   <body>
     <svg class="icon-sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
@@ -262,7 +262,7 @@
                   class="desktop-break"
                 />想仔细看，还是先看一小段，都由你决定。
               </p>
-              <a class="story-button" href="/assets/overview-20260926.png" target="_blank" rel="noopener">查看完整截图 <svg class="icon"><use href="#i-arrow" /></svg></a>
+              <button class="story-button" data-show-frame="0">查看速览截图 <svg class="icon"><use href="#i-arrow" /></svg></button>
             </div>
             <a class="mobile-shot" href="/assets/overview-20260926.png" target="_blank" rel="noopener"
               ><img
@@ -279,7 +279,7 @@
               <p class="section-label">再找片段</p>
               <h3>想看的那一段，<br />不用来回拖。</h3>
               <p>视频变成一张小目录。<br class="desktop-break" />点一下时间，就到你关心的地方。</p>
-              <a class="story-button" href="/assets/navigation-20260926.png" target="_blank" rel="noopener">查看完整截图 <svg class="icon"><use href="#i-arrow" /></svg></a>
+              <button class="story-button" data-show-frame="1">查看导航截图 <svg class="icon"><use href="#i-arrow" /></svg></button>
             </div>
             <a class="mobile-shot" href="/assets/navigation-20260926.png" target="_blank" rel="noopener"
               ><img
@@ -300,7 +300,7 @@
                   class="desktop-break"
                 />像和朋友聊天一样，把疑问慢慢弄懂。
               </p>
-              <a class="story-button" href="/assets/question.png" target="_blank" rel="noopener">查看完整截图 <svg class="icon"><use href="#i-arrow" /></svg></a>
+              <button class="story-button" data-show-frame="2">查看提问截图 <svg class="icon"><use href="#i-arrow" /></svg></button>
             </div>
             <a class="mobile-shot" href="/assets/question.png" target="_blank" rel="noopener"
               ><img
@@ -432,6 +432,7 @@
         >
       </div>
     </footer>
+    <dialog id="screenshot-dialog" aria-label="完整截图"><div class="shot-backdrop"><button type="button" aria-label="关闭截图">×</button><img alt="插件完整截图" /></div></dialog>
     <div class="toast" role="status" aria-live="polite"></div>
   </body>
 </html>
