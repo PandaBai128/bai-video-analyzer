@@ -57,7 +57,6 @@
 
   const frames = [...document.querySelectorAll('[data-frame]')];
   const steps = [...document.querySelectorAll('[data-step]')];
-  const frameButtons = [...document.querySelectorAll('[data-show-frame]')];
   const count = document.querySelector('.preview-count');
   const fullShot = document.querySelector('.full-shot');
   let activeFrame = 0;
@@ -66,18 +65,22 @@
     activeFrame = index;
     frames.forEach((frame, i) => {
       frame.classList.toggle('is-active', i === index);
-      frame.classList.toggle('is-turned', i < index);
+      const depth = (i - index + frames.length) % frames.length;
+      frame.style.setProperty('--depth', String(depth));
+      frame.style.zIndex = String(frames.length - depth);
       frame.setAttribute('aria-hidden', String(i !== index));
       steps[i].classList.toggle('is-active', i === index);
-      frameButtons[i].setAttribute('aria-pressed', String(i === index));
     });
     count.textContent = `0${index + 1} / 03`;
     fullShot.href = frames[index].querySelector('img').getAttribute('src');
 
   }
-  frameButtons.forEach((button) =>
-    button.addEventListener('click', () => showFrame(Number(button.dataset.showFrame))),
-  );
+
+
+  steps.forEach((step, index) => {
+    step.addEventListener('pointerenter', () => showFrame(index));
+    step.addEventListener('focusin', () => showFrame(index));
+  });
 
   if (!gsap || !ScrollTrigger) return;
   gsap.registerPlugin(ScrollTrigger);
