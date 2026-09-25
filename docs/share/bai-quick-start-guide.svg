@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1024" height="2680" viewBox="0 0 1024 2680" role="img" aria-labelledby="title desc">
+  <title id="title">bAI 视频分析助手使用手册</title>
+  <desc id="desc">安装 Chrome 插件，使用邀请码，或配置自己的 API 的三步说明。</desc>
+
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#132238" flood-opacity="0.12" />
+    </filter>
+    <clipPath id="hero-clip">
+      <rect x="0" y="0" width="1024" height="1160" rx="0" />
+    </clipPath>
+    <style>
+      .font { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #182335; }
+      .title { font-size: 58px; font-weight: 800; letter-spacing: 0; }
+      .subtitle { font-size: 27px; font-weight: 500; fill: #526074; }
+      .card-title { font-size: 34px; font-weight: 800; }
+      .body { font-size: 25px; font-weight: 500; }
+      .small { font-size: 20px; font-weight: 500; fill: #526074; }
+      .tag { font-size: 18px; font-weight: 800; letter-spacing: 0; }
+      .footer { font-size: 24px; font-weight: 700; }
+    </style>
+  </defs>
+
+  <rect width="1024" height="2680" fill="#fff8ed" />
+
+  <g clip-path="url(#hero-clip)">
+    <image x="0" y="0" width="1024" height="1536" preserveAspectRatio="none" xlink:href="assets/bai-guide-illustration.png" />
+  </g>
+
+  <g class="font" text-anchor="middle">
+    <text x="512" y="82" class="title">bAI 视频分析助手</text>
+    <text x="512" y="124" class="subtitle">第一次使用？照着这 3 步就能开始</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="54" y="1130" width="916" height="352" rx="24" fill="#ffffff" />
+    <rect x="54" y="1130" width="12" height="352" rx="6" fill="#2bafa6" />
+  </g>
+  <g class="font">
+    <circle cx="112" cy="1190" r="31" fill="#2bafa6" />
+    <text x="112" y="1201" text-anchor="middle" font-size="27" font-weight="800" fill="#ffffff">01</text>
+    <text x="163" y="1199" class="card-title">先把插件装进 Chrome</text>
+    <rect x="786" y="1164" width="128" height="36" rx="18" fill="#d9f3ef" />
+    <text x="850" y="1189" text-anchor="middle" class="tag" fill="#147c76">安装</text>
+
+    <text x="108" y="1260" class="body">从官网下载 ZIP 安装包，按下面的步骤安装：</text>
+    <circle cx="120" cy="1310" r="8" fill="#2bafa6" />
+    <text x="148" y="1318" class="body">解压 ZIP → 打开 <tspan font-family="ui-monospace, SFMono-Regular, monospace" font-size="22">chrome://extensions/</tspan></text>
+    <text x="148" y="1358" class="body">开启「开发者模式」→「加载已解压的扩展程序」→ 选择 <tspan font-family="ui-monospace, SFMono-Regular, monospace" font-size="22">dist/</tspan></text>
+    <text x="108" y="1416" class="body">更新时覆盖原文件夹，再点扩展卡片上的「重新加载」。</text>
+    <text x="108" y="1460" class="small">安装后可点击 Chrome 工具栏的拼图图标，把 bAI 固定起来。</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="54" y="1515" width="916" height="390" rx="24" fill="#ffffff" />
+    <rect x="54" y="1515" width="12" height="390" rx="6" fill="#f26b4f" />
+  </g>
+  <g class="font">
+    <circle cx="112" cy="1575" r="31" fill="#f26b4f" />
+    <text x="112" y="1586" text-anchor="middle" font-size="27" font-weight="800" fill="#ffffff">02</text>
+    <text x="163" y="1584" class="card-title">有邀请码：使用 bAI 免费服务</text>
+    <rect x="786" y="1549" width="128" height="36" rx="18" fill="#ffe1d7" />
+    <text x="850" y="1574" text-anchor="middle" class="tag" fill="#b64b35">默认路径</text>
+
+    <text x="108" y="1645" class="body">点击 bAI 图标 →「设置」→「模型服务」</text>
+    <text x="108" y="1690" class="body">选择「bAI 免费服务」→ 输入 <tspan font-weight="800">thankyoupanda</tspan> →「保存」</text>
+    <text x="108" y="1735" class="body">每天共享 1000 次、每周共享 5000 次额度，先到先得</text>
+    <rect x="108" y="1770" width="808" height="91" rx="15" fill="#fff1eb" />
+    <text x="135" y="1810" class="small" fill="#8d4d3c">我的 API 额度有限，公共体验可能因额度或维护暂时不可用。</text>
+    <text x="135" y="1844" class="small" fill="#8d4d3c">没有可用额度时，直接看第 03 步，用自己的 API 也能使用。</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="54" y="1938" width="916" height="450" rx="24" fill="#ffffff" />
+    <rect x="54" y="1938" width="12" height="450" rx="6" fill="#efb33b" />
+  </g>
+  <g class="font">
+    <circle cx="112" cy="1998" r="31" fill="#efb33b" />
+    <text x="112" y="2009" text-anchor="middle" font-size="27" font-weight="800" fill="#ffffff">03</text>
+    <text x="163" y="2007" class="card-title">没有邀请码？用自己的 API</text>
+    <rect x="786" y="1972" width="128" height="36" rx="18" fill="#fff0bd" />
+    <text x="850" y="1997" text-anchor="middle" class="tag" fill="#8e6500">可选路径</text>
+
+    <text x="108" y="2068" class="body">在「模型服务」中选择「使用自己的大模型」</text>
+    <text x="108" y="2113" class="body">选择 Provider → 填写 Base URL、模型名、API Key</text>
+    <text x="108" y="2158" class="body">点击「保存」；需要确认时再点「测试连接」</text>
+    <rect x="108" y="2196" width="808" height="132" rx="15" fill="#fff8df" />
+    <text x="135" y="2236" class="small" fill="#765800">这条路径的请求不经过 bAI 免费服务。</text>
+    <text x="135" y="2270" class="small" fill="#765800">API Key 只保存在本机 Chrome storage，费用和额度按</text>
+    <text x="135" y="2304" class="small" fill="#765800">你选择的模型服务商规则计算。</text>
+  </g>
+
+  <g class="font">
+    <rect x="54" y="2430" width="916" height="150" rx="24" fill="#182335" />
+    <text x="90" y="2480" class="footer" fill="#ffffff">配置完成后：</text>
+    <text x="90" y="2522" class="body" fill="#d9f3ef">登录 B 站后打开视频 / 打开 YouTube 视频 → 打开侧边栏</text>
+    <text x="90" y="2557" class="body" fill="#d9f3ef">用「速览 · 导航 · 提问 · 笔记」开始看视频。</text>
+  </g>
+
+  <text x="512" y="2635" class="font small" text-anchor="middle">bAI 视频分析助手 · B 站部分字幕需要登录状态</text>
+</svg>
