@@ -42,10 +42,7 @@
     button.addEventListener('click', async () => {
       try {
         await navigator.clipboard.writeText(button.dataset.copy);
-        toast.textContent =
-          button.dataset.copy === 'thankyoupanda'
-            ? '邀请码复制好了，去插件设置里粘贴吧。'
-            : '地址复制好了，在 Chrome 地址栏粘贴打开。';
+        toast.textContent = '地址复制好了，在 Chrome 地址栏粘贴打开。';
       } catch {
         toast.textContent = `请手动复制：${button.dataset.copy}`;
       }

@@ -10,7 +10,9 @@
 </p>
 
 <p align="center">
-  <a href="https://video-analysis.pandabai.com/">官网与下载安装</a>
+  <a href="https://github.com/PandaBai128/bai-video-analyzer/releases/latest">下载最新版</a>
+  ·
+  <a href="https://video-analysis.pandabai.com/">官网</a>
   ·
   <a href="https://github.com/PandaBai128/bai-video-analyzer/issues">反馈问题</a>
   ·
@@ -122,38 +124,13 @@
 
 娱乐视频、纯音乐或没有可用字幕的视频，也许不适合交给它分析。
 
-## 三分钟开始
+## 安装与配置
 
-![bAI 视频分析助手快速开始手册](docs/share/bai-quick-start-guide.png)
+1. 从 [GitHub Releases](https://github.com/PandaBai128/bai-video-analyzer/releases/latest) 的 Assets 下载插件 ZIP 并解压。
+2. 在 Chrome 打开 `chrome://extensions/`，开启“开发者模式”，点击“加载已解压的扩展程序”，选择 `dist` 文件夹。
+3. 在插件设置的“模型服务”中选择“使用自己的大模型”，填写模型服务信息。
 
-### 1. 安装插件
-
-目前尚未上架 Chrome Web Store，推荐使用 Release 中的 ZIP 包：
-
-1. 从 [bAI 视频分析助手官网](https://video-analysis.pandabai.com/) 下载最新版 ZIP；[GitHub Releases](https://github.com/PandaBai128/bai-video-analyzer/releases/latest) 保留为备用下载渠道。
-2. 解压文件，打开 Chrome 的 `chrome://extensions/`。
-3. 开启“开发者模式”，选择“加载已解压的扩展程序”。
-4. 选择解压后的 `dist` 文件夹，然后把 bAI 固定到工具栏。
-
-已有旧版的用户，请把新版 ZIP 解压到原安装目录，并在 `chrome://extensions/` 点击该扩展的重新加载按钮。当前开发者模式安装需要手动完成此步骤，访问官网不会让浏览器自动升级。当前 v0.1.2 Release 只提供 ZIP，按上述步骤安装或覆盖更新。
-
-### 2. 使用公共体验服务
-
-打开插件设置，进入“模型服务”，选择“bAI 免费服务”，填写：
-
-```text
-thankyoupanda
-```
-
-这是公开共享的邀请码，**每天共有 100 次、每周共有 500 次调用额度，先到先得**。我的模型 API 额度有限，所以目前只能提供这些；公共服务可能因为额度、维护或滥用临时不可用，也不承诺长期稳定性。
-
-公共体验服务通过 `https://video-analysis.pandabai.com` 提供 HTTPS 连接。这个地址也提供产品介绍、最新版安装包和安装说明。
-
-### 3. 或者使用自己的 API
-
-你也可以在设置中选择“使用自己的大模型”，填写自己的服务信息。这样不会占用公共邀请码额度。
-
-目前我手上只有 **MiniMax**，所以 MiniMax 是实际持续测试的模型。界面中提供的其他兼容接口还没有逐一实测，可能存在模型名、返回格式或流式输出差异。欢迎提交 issue 告诉我结果，也欢迎直接修改并提交 PR。
+**升级已有安装：** 用新版文件覆盖原安装目录，再在 Chrome 扩展管理页点击“重新加载”。
 
 ## 关于 B 站登录与字幕
 
